@@ -15,3 +15,15 @@ buildNumber.properties
 **/target/
 .idea
 **/.gitignore
+src/main/resources/static/
+src/main/resources/templates/
+gulimall-coupon/src/main/resources/static/
+gulimall-coupon/src/main/resources/templates/
+gulimall-member/src/main/resources/static/
+gulimall-member/src/main/resources/templates/
+gulimall-order/src/main/resources/static/
+gulimall-order/src/main/resources/templates/
+gulimall-product/src/main/resources/static/
+gulimall-product/src/main/resources/templates/
+gulimall-ware/src/main/resources/static/
+gulimall-ware/src/main/resources/templates/
