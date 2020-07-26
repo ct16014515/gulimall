@@ -1,0 +1,38 @@
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 172.31.197.22:18848
+        namespace: 4cbfefb7-7281-4479-8047-6aff8ab48ac2
+    gateway:
+      routes:
+        #配置商品路http://localhost:88/api/product/category/list/tree  http://127.0.0.1:10002/product/category/list/tree
+        - id: product_route
+          uri: lb://gulimall-product
+          predicates:
+            - Path=/api/product/**
+          filters:
+            - RewritePath=/api/(?<segment>/?.*), /$\{segment}
+        #配置第三方服务路由  http://127.0.0.1:88/api/thirdparty/oss/policy
+        - id: gulimall_third_party
+          uri: lb://gulimall-third-party
+          predicates:
+            - Path=/api/thirdparty/**
+          filters:
+              - RewritePath=/api/(?<segment>/?.*), /$\{segment}
+        #配置后台路由
+        - id: admin_route
+          uri: lb://renren-fast
+          predicates:
+            - Path=/api/**  # 需要将http://localhost:88/api/captcha.jpg 转到 http://localhost:8080/renren-fast/captcha.jpg
+          filters:  #- RewritePath=/red(?<segment>/?.*), $\{segment} 会将red舍去
+            - RewritePath=/api/(?<segment>/?.*), /renren-fast/$\{segment}  #重写路径逗号前面的是之前的地址,后面是需要转到的地址
+         # 配置gulimall-product的web页面转发 由于gulimall.com的api接口也会匹配此路径 所以需要发放最后
+        - id: gulimall_productweb
+          uri: lb://gulimall-product
+          predicates:
+            - Host=**gulimall.com    #主机地址为gulimall.com都转到gulimall-product
+  application:
+    name: gulimall-gateway
+server:
+  port: 88

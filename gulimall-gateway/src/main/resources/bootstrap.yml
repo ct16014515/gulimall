@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: gulimall-gateway
+  cloud:
+    nacos:
+      config:
+        server-addr: 172.31.197.22:18848 #nacos中心地址
+        file-extension: yaml # 配置文件格式
+        namespace: 4cbfefb7-7281-4479-8047-6aff8ab48ac2
