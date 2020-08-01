@@ -1,7 +1,7 @@
 package com.iflytek.gulimall.ware.service.impl;
 
 
-import com.iflytek.common.model.vo.WareHasStockVo;
+import com.iflytek.common.model.vo.WareHasStockVO;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,12 +44,12 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
      * @return
      */
     @Override
-    public List<WareHasStockVo> hasStock(List<Long> skuIds) {
-        List<WareHasStockVo> list = skuIds.stream().map(skuid -> {
-            WareHasStockVo wareHasStockVo = new WareHasStockVo();
+    public List<WareHasStockVO> hasStock(List<Long> skuIds) {
+        List<WareHasStockVO> list = skuIds.stream().map(skuid -> {
+            WareHasStockVO wareHasStockVo = new WareHasStockVO();
             Long sumStock= wareSkuDao.selectStockBySkuId(skuid)==null?0:wareSkuDao.selectStockBySkuId(skuid);
             wareHasStockVo.setSkuId(skuid);
-            wareHasStockVo.setHasStock(sumStock>0);
+            wareHasStockVo.setHasStock(sumStock>0?1:0);
             return wareHasStockVo;
         }).collect(Collectors.toList());
         return list;

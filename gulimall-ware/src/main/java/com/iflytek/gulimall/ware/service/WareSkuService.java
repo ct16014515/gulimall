@@ -3,7 +3,7 @@ package com.iflytek.gulimall.ware.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 
-import com.iflytek.common.model.vo.WareHasStockVo;
+import com.iflytek.common.model.vo.WareHasStockVO;
 import com.iflytek.common.utils.PageUtils;
 import com.iflytek.gulimall.ware.entity.WareSkuEntity;
 
@@ -23,6 +23,6 @@ public interface WareSkuService extends IService<WareSkuEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
 
-    List<WareHasStockVo> hasStock(List<Long> skuIds);
+    List<WareHasStockVO> hasStock(List<Long> skuIds);
 }
 

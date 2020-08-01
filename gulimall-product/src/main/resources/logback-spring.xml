@@ -42,5 +42,5 @@
     </root>
 
     <!-- 打印sql语句 -->
-    <logger name="com.iflytek.gulimall.product.dao" level="ERROR" />
+    <logger name="com.iflytek.gulimall.product.dao" level="DEBUG" />
 </configuration>

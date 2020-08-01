@@ -20,7 +20,7 @@ public class SkuEsModel {
 
     private Long saleCount;//销量
 
-    private Boolean hasStock;//是否有库存
+    private Integer hasStock;//是否有库存 0没库存 1有库存
 
     private Long hotScore;//热度评分
 
@@ -34,6 +34,6 @@ public class SkuEsModel {
 
     private String catalogName;//分类名称
 
-    private List<Attrs> attrs;
+    private List<Attr> attrs;
 
 }

@@ -1,6 +1,6 @@
 package com.iflytek.gulimall.product.dao;
 
-import com.iflytek.common.model.es.Attrs;
+import com.iflytek.common.model.es.Attr;
 import com.iflytek.gulimall.product.entity.ProductAttrValueEntity;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
@@ -18,16 +18,19 @@ import java.util.List;
  */
 @Mapper
 public interface ProductAttrValueDao extends BaseMapper<ProductAttrValueEntity> {
-   @Select("SELECT\n" +
-           "\tt1.attr_id attrId,\n" +
-           "\tt1.attr_name attrName,\n" +
-           "\tt1.attr_value attrValue \n" +
-           "FROM\n" +
-           "\tpms_product_attr_value t1,\n" +
-           "\tpms_attr t2\n" +
-           "\tWHERE \n" +
-           "\tt1.attr_id=t2.attr_id \n" +
-           "\tAND t2.search_type=1 AND t1.spu_id=#{spuId}\n" +
-           "\t")
-    List<Attrs> selectAttrsBySpuId(@Param("spuId") Long spuId);
+   @Select("SELECT" +
+           " attr_id attrId, " +
+           " attr_name attrName," +
+           " value_select  valueSelect" +
+           " FROM " +
+           " pms_attr  " +
+           "WHERE " +
+           " attr_id IN ( " +
+           "SELECT " +
+           " tattr_id  " +
+           "FROM " +
+           "tpms_product_attr_value  " +
+           "WHERE " +
+           " spu_id = #{spuId})")
+    List<Attr> selectAttrsBySpuId(@Param("spuId") Long spuId);
 }

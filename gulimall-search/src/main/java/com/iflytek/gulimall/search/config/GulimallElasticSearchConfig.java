@@ -8,6 +8,8 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import javax.sql.DataSource;
+
 @Configuration
 public class GulimallElasticSearchConfig {
 
@@ -20,6 +22,9 @@ public class GulimallElasticSearchConfig {
 //                        .HeapBufferedResponseConsumerFactory(30 * 1024 * 1024 * 1024));
         COMMON_OPTIONS = builder.build();
     }
+
+
+
 
 
     /**

@@ -1,11 +1,12 @@
 package com.iflytek.gulimall.product.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.iflytek.common.exception.GulimallExceptinCodeEnum;
 import com.iflytek.common.exception.RRException;
-import com.iflytek.common.model.es.Attrs;
+import com.iflytek.common.model.es.Attr;
 import com.iflytek.common.model.es.SkuEsModel;
-import com.iflytek.common.model.vo.WareHasStockVo;
+import com.iflytek.common.model.vo.WareHasStockVO;
 
 import com.iflytek.common.utils.ResultBody;
 import com.iflytek.gulimall.product.dao.*;
@@ -17,6 +18,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -71,25 +73,38 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
             return item.getSkuId();
         }).collect(Collectors.toList());
         //TODO 1、hasStock是否有库存 远程调用库存服务查询是否有库存
-        Map<Long, Boolean> stockVosMap = null;
+        Map<Long, Integer> stockVosMap = null;
         try {
-            TypeReference<List<WareHasStockVo>> typeReference = new TypeReference<List<WareHasStockVo>>() {
+            TypeReference<List<WareHasStockVO>> typeReference = new TypeReference<List<WareHasStockVO>>() {
             };
-            List<WareHasStockVo> stockVos = wareService.hasStock(skuIdList).getData(typeReference);
-            stockVosMap = stockVos.stream().collect(Collectors.toMap(WareHasStockVo::getSkuId, item -> item.getHasStock()));
+            List<WareHasStockVO> stockVos = wareService.hasStock(skuIdList).getData(typeReference);
+            stockVosMap = stockVos.stream().collect(Collectors.toMap(WareHasStockVO::getSkuId, item -> item.getHasStock()));
         } catch (Exception e) {
             log.info("库存服务查询异常:{}", e);
         }
         //TODO 4、查询当前sku用来被检索的属性规格
-        List<Attrs> attrs = productAttrValueDao.selectAttrsBySpuId(spuId);
-        Map<Long, Boolean> finalStockVosMap = stockVosMap;
+        List<Attr> attrs = productAttrValueDao.selectAttrsBySpuId(spuId);
+        List<Attr> attrList =new ArrayList<>();
+        attrs.stream().forEach(a->{
+            String valueSelect = a.getValueSelect();
+            List<String> strings = JSON.parseObject(valueSelect, new TypeReference<List<String>>() {
+            });
+            strings.stream().forEach(s->{
+                Attr attr1 =new Attr();
+                attr1.setAttrValue(s);
+                attr1.setAttrName(a.getAttrName());
+                attr1.setAttrId(a.getAttrId());
+                attrList.add(attr1);
+            });
+        });
+        Map<Long, Integer> finalStockVosMap = stockVosMap;
         List<SkuEsModel> esModels = skuList.stream().map(skuInfoEntity -> {
             SkuEsModel skuEsModel = new SkuEsModel();
             BeanUtils.copyProperties(skuInfoEntity, skuEsModel);
             skuEsModel.setSkuPrice(skuInfoEntity.getPrice());//价格
             skuEsModel.setSkuImg(skuInfoEntity.getSkuDefaultImg());//图片
             //是否有库存,如果远程调用失败默认为有库存
-            skuEsModel.setHasStock(finalStockVosMap == null ? true : finalStockVosMap.get(skuInfoEntity.getSkuId()));//是否头库存
+            skuEsModel.setHasStock(finalStockVosMap == null ? 0 : finalStockVosMap.get(skuInfoEntity.getSkuId()));//是否头库存
             //TODO 2、 hotScore 热度评分 0
             skuEsModel.setHotScore(0L);
             //TODO 3、查询品牌和分类信息
@@ -100,7 +115,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
             String categoryName = categoryDao.selectNameById(skuInfoEntity.getCatalogId());
             skuEsModel.setCatalogName(categoryName);
             //当前sku用来被检索的属性
-            skuEsModel.setAttrs(attrs);
+            skuEsModel.setAttrs(attrList);
             return skuEsModel;
         }).collect(Collectors.toList());
         ResultBody resultBody = serachService.productUp(esModels);
@@ -115,5 +130,19 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         }
     }
 
+    public static void main(String[] args) {
+        String str="[\"3000mAh\"]";
 
+//        List<String>list=new ArrayList<>();
+//        list.add("3000mAh");
+//        list.add("4000mAh");
+//        list.add("5000mAh");
+//        String s = JSON.toJSONString(list);
+//        System.out.println(s);
+        List<String> strings = JSON.parseObject(str, new TypeReference<List<String>>() {
+        });
+        System.out.println(strings);
+
+
+    }
 }

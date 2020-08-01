@@ -12,7 +12,7 @@
     <artifactId>gulimall-search</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>gulimall-search</name>
-    <description>es搜索服务</description>
+    <description>搜索服务</description>
 
     <properties>
         <java.version>1.8</java.version>
@@ -25,6 +25,16 @@
             <groupId>com.iflytek.gulimall</groupId>
             <artifactId>gulimall-common</artifactId>
             <version>0.0.1-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.baomidou</groupId>
+                    <artifactId>mybatis-plus-boot-starter</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.alibaba</groupId>
+                    <artifactId>druid-spring-boot-starter</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>

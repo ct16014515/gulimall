@@ -1,3 +1,4 @@
+//PUT /product
 {
   "mappings": {
     "properties": {
@@ -12,18 +13,16 @@
         "analyzer": "ik_smart"
       },
       "skuPrice": {
-        "type": "keyword"
+        "type": "long"
       },
       "skuImg": {
-        "type": "keyword",
-        "index": false,
-        "doc_values": false
+        "type": "keyword"
       },
       "saleCount": {
         "type": "long"
       },
       "hasStock": {
-        "type": "boolean"
+        "type": "long"
       },
       "hotScore": {
         "type": "long"
@@ -38,25 +37,19 @@
         "type": "keyword"
       },
       "brandImg": {
-        "type": "keyword",
-        "index": false,
-        "doc_values": false
+        "type": "keyword"
       },
       "catelogName": {
-        "type": "keyword",
-        "index": false,
-        "doc_values": false
+        "type": "keyword"
       },
-      "attr": {
+      "attrs": {
         "type": "nested",
         "properties": {
           "attrId": {
             "type": "long"
           },
           "attrName": {
-            "type": "keyword",
-            "index": false,
-            "doc_values": false
+            "type": "keyword"
           },
           "attrValue": {
             "type": "keyword"
@@ -65,3 +58,4 @@
       }
     }
   }
+}

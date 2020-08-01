@@ -31,7 +31,11 @@ spring:
         - id: gulimall_productweb
           uri: lb://gulimall-product
           predicates:
-            - Host=**gulimall.com    #主机地址为gulimall.com都转到gulimall-product
+            - Host=gulimall.com
+        - id: gulimall_searchweb
+          uri: lb://gulimall-search
+          predicates:
+            - Host=search.gulimall.com
   application:
     name: gulimall-gateway
 server:

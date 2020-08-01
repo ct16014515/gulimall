@@ -5,9 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 
-import com.iflytek.common.model.vo.WareHasStockVo;
+import com.iflytek.common.model.vo.WareHasStockVO;
 
-import com.iflytek.common.utils.ResultBody;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,7 +31,7 @@ public class WareSkuController {
 
     @PostMapping("/hasStock")
     public R hasStock(@RequestBody List<Long> skuIds) {
-        List<WareHasStockVo> list = wareSkuService.hasStock(skuIds);
+        List<WareHasStockVO> list = wareSkuService.hasStock(skuIds);
         R r = R.ok().setData(list);
         return r;
     }

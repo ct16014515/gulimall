@@ -1,0 +1,163 @@
+//GET product/_search
+{
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "match": {
+            "skuTitle": "手机"
+          }
+        }
+      ],
+      "filter": [
+        {
+          "term": {
+            "catalogId": {
+              "value": "225"
+            }
+          }
+        },
+        {
+          "term": {
+            "hasStock": {
+              "value": 1
+            }
+          }
+        },
+        {
+          "terms": {
+            "brandId": [
+              "4",
+              "5"
+            ]
+          }
+        },
+        {
+          "nested": {
+            "path": "attrs",
+            "query": {
+              "bool": {
+                "must": [
+                  {
+                    "term": {
+                      "attrs.attrId": 1
+                    }
+                  },
+                  {
+                    "terms": {
+                      "attrs.attrValue": [
+                        "3000mAh"
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "nested": {
+            "path": "attrs",
+            "query": {
+              "bool": {
+                "must": [
+                  {
+                    "term": {
+                      "attrs.attrId": 2
+                    }
+                  },
+                  {
+                    "terms": {
+                      "attrs.attrValue": [
+                        "55"
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        },
+        {
+          "range": {
+            "skuPrice": {
+              "gte": 0,
+              "lte": 100000
+            }
+          }
+        }
+      ]
+    }
+  },
+  "sort": [
+    {
+      "skuPrice": {
+        "order": "desc"
+      }
+    }
+  ],
+  "from": 1,
+  "size": 2,
+  "highlight": {
+    "pre_tags": "<b 'style:color=red'>",
+    "post_tags": "</b>",
+    "fields": {
+      "skuTitle": {}
+    }
+  },
+  "aggs": {
+    "brandIdAgg": {
+      "terms": {
+        "field": "brandId"
+      },
+      "aggs": {
+        "brandNameAgg": {
+          "terms": {
+            "field": "brandName"
+          }
+        },
+        "brandImgAgg": {
+          "terms": {
+            "field": "brandImg.keyword"
+          }
+        }
+      }
+    },
+    "categoryAgg": {
+      "terms": {
+        "field": "catalogId"
+      },
+      "aggs": {
+        "categoryNameAgg": {
+          "terms": {
+            "field": "catalogName.keyword"
+          }
+        }
+      }
+    },
+    "attrsAgg": {
+      "nested": {
+        "path": "attrs"
+      },
+      "aggs": {
+        "attrIdAgg": {
+          "terms": {
+            "field": "attrs.attrId"
+          },
+          "aggs": {
+            "attrNameAgg": {
+              "terms": {
+                "field": "attrs.attrName"
+              }
+            },
+            "attrValueAgg": {
+              "terms": {
+                "field": "attrs.attrValue"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

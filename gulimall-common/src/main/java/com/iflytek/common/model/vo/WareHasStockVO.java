@@ -10,15 +10,15 @@ import java.io.Serializable;
  */
 @Data
 @ToString
-public class WareHasStockVo implements Serializable {
+public class WareHasStockVO implements Serializable {
 
     private Long skuId;
-    private Boolean hasStock;
+    private Integer hasStock;
 
-    public WareHasStockVo() {
+    public WareHasStockVO() {
     }
 
-    public WareHasStockVo(Long skuId, Boolean hasStock) {
+    public WareHasStockVO(Long skuId, Integer hasStock) {
         this.skuId = skuId;
         this.hasStock = hasStock;
     }

@@ -17,7 +17,9 @@ package com.iflytek.common.exception;
 public enum GulimallExceptinCodeEnum {
     UNKNOWN_EXCEPTION(10000, "系统未知异常"),
     VALIDATE_EXCEPTION(10001, "参数校验异常"),
-    PRODUCT_UP_ERROR(11000, "商品上架异常");
+    PRODUCT_UP_ERROR(11000, "商品上架异常"),
+    PRODUCT_SEARCH_ERROR(11001, "搜索关键字不能为空");
+
 
 
     private Integer code;

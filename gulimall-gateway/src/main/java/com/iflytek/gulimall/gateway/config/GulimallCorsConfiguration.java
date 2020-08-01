@@ -18,7 +18,6 @@ public class GulimallCorsConfiguration {
         configuration.addAllowedOrigin("*");
         configuration.setAllowCredentials(true);
         source.registerCorsConfiguration("/**",configuration);
-
         CorsWebFilter corsWebFilter = new CorsWebFilter(source);
         return corsWebFilter;
     }
