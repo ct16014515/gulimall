@@ -2,6 +2,7 @@ package com.iflytek.gulimall.product.service.impl;
 
 import com.iflytek.gulimall.product.entity.CategoryEntity;
 import com.iflytek.gulimall.product.service.CategoryService;
+import com.iflytek.gulimall.product.vo.SpuItemAttrGroupVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +28,8 @@ public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEnt
 
     @Autowired
     private CategoryService categoryService;
+    @Autowired
+    AttrGroupDao attrGroupDao;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -75,7 +78,7 @@ public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEnt
         AttrGroupEntity attrGroupEntity = getById(attrGroupId);
         Long catelogId = attrGroupEntity.getCatelogId();
         CategoryEntity categoryEntity = categoryService.getById(catelogId);
-        List<Long>list=new ArrayList<>();
+        List<Long> list = new ArrayList<>();
         //三级目录在最前面,[734,80,9]; 需要改为[9,80,734];
         List<Long> getcatelogIds = getcatelogIds(list, categoryEntity);
         //将排序反转
@@ -84,13 +87,24 @@ public class AttrGroupServiceImpl extends ServiceImpl<AttrGroupDao, AttrGroupEnt
         return attrGroupEntity;
     }
 
+
+    @Override
+    public List<SpuItemAttrGroupVo> getAttrGroupWithAttrsBySpuId(Long spuId, Long catalogId) {
+        //1、查出当前spu对应的所有属性的分组信息以及当前分组下的所有属性对应的值
+        AttrGroupDao baseMapper = this.getBaseMapper();
+        List<SpuItemAttrGroupVo> vos = baseMapper.getAttrGroupWithAttrsBySpuId(spuId, catalogId);
+        return vos;
+    }
+
     @Override
     public List<AttrGroupEntity> getListByAttrGroupId(Long attrGroupId) {
-        return null;
+        List<AttrGroupEntity> list = attrGroupDao.selectList(new QueryWrapper<AttrGroupEntity>().eq("attr_group_id", attrGroupId));
+        return list;
     }
 
     /**
      * 根据entity查找分类id,直到一级分类
+     *
      * @param catelogIds
      * @param entity
      * @return

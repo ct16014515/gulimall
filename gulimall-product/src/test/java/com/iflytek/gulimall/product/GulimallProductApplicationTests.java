@@ -3,12 +3,15 @@ package com.iflytek.gulimall.product;
 import com.aliyun.oss.OSS;
 import com.iflytek.gulimall.product.entity.BrandEntity;
 import com.iflytek.gulimall.product.service.BrandService;
+import com.iflytek.gulimall.product.service.impl.SkuInfoServiceImpl;
+import com.iflytek.gulimall.product.vo.SkuItemVo;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.concurrent.ExecutionException;
 
 @SpringBootTest
 class GulimallProductApplicationTests {
@@ -17,6 +20,9 @@ class GulimallProductApplicationTests {
 
     @Autowired
     private OSS ossClient;
+
+    @Autowired
+    private SkuInfoServiceImpl  skuInfoService;
 
     @Test
     public void testUpload() throws FileNotFoundException {
@@ -30,5 +36,12 @@ class GulimallProductApplicationTests {
         brandEntity.setName("华为");
         brandService.save(brandEntity);
     }
+    @Test
+    public void testFuture() throws ExecutionException, InterruptedException {
+       // SkuItemVo skuItem1 = skuInfoService.getSkuItem1(17L);
+        SkuItemVo skuItem1 = skuInfoService.getSkuItem(17L);
+    }
+
+
 
 }

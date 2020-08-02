@@ -13,6 +13,7 @@ import com.iflytek.gulimall.product.dao.*;
 import com.iflytek.gulimall.product.entity.*;
 import com.iflytek.gulimall.product.feign.SerachService;
 import com.iflytek.gulimall.product.feign.WareService;
+import com.iflytek.gulimall.product.vo.SkuItemVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -129,6 +131,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
             throw new RRException(GulimallExceptinCodeEnum.PRODUCT_UP_ERROR);
         }
     }
+
 
     public static void main(String[] args) {
         String str="[\"3000mAh\"]";

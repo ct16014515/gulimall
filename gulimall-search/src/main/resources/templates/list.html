@@ -1190,7 +1190,7 @@
                                 <a href="static/search#">关注</a>
                             </div>
                             <p class="da">
-                                <a href="static/search#"
+                                <a th:href="|http://item.gulimall.com:9006/${skuModel.getSkuId()}.html|"
                                    title="购买AppleCare+，获得原厂2年整机保修(含电池)，和多达2次意外损坏的保修服务。购买勾选：保障服务、原厂保2年。">
                                     <img th:src="${skuModel.skuImg}" class="dim">
                                 </a>
@@ -1204,7 +1204,7 @@
 
                             </p>
                             <p class="tab_JE">
-                                <a th:href="${skuModel.skuImg}" th:title="${skuModel.skuTitle}"
+                                <a th:href="|http://item.gulimall.com:9006/${skuModel.getSkuId()}.html|" th:title="${skuModel.skuTitle}"
                                    th:utext="${skuModel.skuTitle}">
 
                                 </a>
