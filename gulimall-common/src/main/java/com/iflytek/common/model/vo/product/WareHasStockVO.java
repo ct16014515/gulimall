@@ -1,4 +1,4 @@
-package com.iflytek.common.model.vo;
+package com.iflytek.common.model.vo.product;
 
 import lombok.Data;
 import lombok.ToString;

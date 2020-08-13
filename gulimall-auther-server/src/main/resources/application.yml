@@ -1,0 +1,18 @@
+spring:
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 172.31.197.22:18848
+        namespace: 4cbfefb7-7281-4479-8047-6aff8ab48ac2
+  application:
+    name: gulimall-auther-server
+  redis:
+    database: 0
+    port: 16379
+    host: 172.31.197.22
+    lettuce:
+      pool:
+        max-active: 1024     #可用连接实例的最大数目，默认值为8；
+        max-idle: 200  #控制一个pool最多有多少个状态为idle
+server:
+  port: 20000

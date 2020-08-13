@@ -3,6 +3,7 @@ spring:
     nacos:
       discovery:
         server-addr: 172.31.197.22:18848
+        namespace: 4cbfefb7-7281-4479-8047-6aff8ab48ac2
   application:
     name: gulimall-search
 server:

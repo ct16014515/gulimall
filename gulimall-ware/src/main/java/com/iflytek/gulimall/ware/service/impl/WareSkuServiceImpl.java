@@ -1,7 +1,7 @@
 package com.iflytek.gulimall.ware.service.impl;
 
 
-import com.iflytek.common.model.vo.WareHasStockVO;
+import com.iflytek.common.model.vo.product.WareHasStockVO;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

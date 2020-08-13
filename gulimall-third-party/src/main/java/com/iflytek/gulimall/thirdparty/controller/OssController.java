@@ -19,7 +19,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/thirdparty/oss")
+@RequestMapping("/thirdparty")
 public class OssController {
     @Autowired
     private OSS ossClient;
@@ -32,7 +32,7 @@ public class OssController {
 
 
 
-    @RequestMapping("/policy")
+    @RequestMapping("/oss/policy")
     public R policy(){
 
         String host = "https://" + bucket + "." + endpoint; // host的格式为 bucketname.endpoint

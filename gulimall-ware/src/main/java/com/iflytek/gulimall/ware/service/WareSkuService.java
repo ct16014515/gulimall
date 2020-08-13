@@ -3,7 +3,7 @@ package com.iflytek.gulimall.ware.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 
-import com.iflytek.common.model.vo.WareHasStockVO;
+import com.iflytek.common.model.vo.product.WareHasStockVO;
 import com.iflytek.common.utils.PageUtils;
 import com.iflytek.gulimall.ware.entity.WareSkuEntity;
 

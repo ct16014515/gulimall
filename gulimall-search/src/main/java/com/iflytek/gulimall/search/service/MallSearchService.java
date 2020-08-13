@@ -3,6 +3,7 @@ package com.iflytek.gulimall.search.service;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
+import com.iflytek.common.exception.RRException;
 import com.iflytek.common.model.es.SkuEsModel;
 import com.iflytek.gulimall.search.constant.EsConstant;
 import com.iflytek.gulimall.search.vo.*;
@@ -36,6 +37,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.iflytek.common.exception.GulimallExceptinCodeEnum.PRODUCT_SEARCH_ERROR;
+
 @Service
 @Slf4j
 public class MallSearchService {
@@ -54,6 +57,9 @@ public class MallSearchService {
          * 构造查询条件
          */
         SearchRequest searchRequest = buildSearchRequest(param);
+        if (searchRequest==null){
+            return null;
+        }
         SearchResponse search = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
         /**
          * 封装返回结果
@@ -383,7 +389,13 @@ public class MallSearchService {
             attrVOS.add(attrVO);
         }
       //  System.out.println("属性聚合结果为:" + attrVOS);
+
         searchResult.setAttrVOS(attrVOS);
+        attrVOS.stream().map(item->{
+            return item.getAttrName();
+        }).collect(Collectors.toList());
+
+
         return searchResult;
     }
 
@@ -394,7 +406,7 @@ public class MallSearchService {
         //查询条件.如果关键字为空则匹配全部
         QueryBuilder queryBuilder = null;
         if (StringUtils.isEmpty(param.getKeyword())) {
-            queryBuilder = QueryBuilders.matchAllQuery();//匹配全部
+          return null;
         } else {
             queryBuilder = QueryBuilders.matchQuery("skuTitle", param.getKeyword());//关键字匹配
         }

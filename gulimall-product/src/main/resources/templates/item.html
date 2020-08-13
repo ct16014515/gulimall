@@ -367,7 +367,7 @@
 					</div>
 					<div class="crumb-item sep">></div>
 					<div class="crumb-item">
-						华为Mate 10
+
 					</div>
 				</div>
 
@@ -480,8 +480,8 @@
 
 					</div>
 					<div class="box-two">
-						<div class="box-name">
-							华为 HUAWEI Mate 10 6GB+128GB 亮黑色 移动联通电信4G手机 双卡双待
+						<div class="box-name" th:text="${skuItemVo.info.skuTitle}">
+
 						</div>
 						<div class="box-hide">预订用户预计11月30日左右陆续发货！麒麟970芯片！AI智能拍照！
 							<a href="static/item/"><u>华为 HUAWEI Mate 10 Pro 10:08 限时限量抢！</u></a>
@@ -507,10 +507,10 @@
 						</div>
 						<div class="box-summary clear">
 							<ul>
-								<li>京东价</li>
+								<li>谷粒商城价</li>
 								<li>
 									<span>￥</span>
-									<span>4499.00</span>
+									<span >[[${skuItemVo.info.getPrice()}]]</span>
 								</li>
 								<li>
 									预约享资格

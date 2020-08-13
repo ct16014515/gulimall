@@ -1,5 +1,6 @@
 package com.iflytek.common.model.es;
 
+import com.iflytek.common.constant.AutherServerConstant;
 import lombok.Data;
 
 @Data

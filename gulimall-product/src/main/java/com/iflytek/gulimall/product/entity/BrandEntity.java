@@ -39,7 +39,7 @@ public class BrandEntity implements Serializable {
 	/**
 	 * 品牌名
 	 */
-	@NotBlank(message = "品牌名不能为空")
+	@NotNull(message = "品牌名不能为空")
 	private String name;
 	/**
 	 * 品牌logo地址

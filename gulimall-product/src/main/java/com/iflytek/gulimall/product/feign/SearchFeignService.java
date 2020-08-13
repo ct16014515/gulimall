@@ -1,11 +1,12 @@
 package com.iflytek.gulimall.product.feign;
 
 import com.iflytek.common.utils.ResultBody;
+import com.iflytek.gulimall.product.feign.factory.SearchServiceFallbackFactory;
 import com.iflytek.gulimall.product.vo.SeckillSkuVo;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-@FeignClient(value = "gulimall-seckill")
+@FeignClient(value = "gulimall-seckill",fallbackFactory = SearchServiceFallbackFactory.class )
 public interface SearchFeignService {
 
     /**

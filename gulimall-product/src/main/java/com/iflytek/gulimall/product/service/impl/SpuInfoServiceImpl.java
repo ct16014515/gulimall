@@ -6,14 +6,13 @@ import com.iflytek.common.exception.GulimallExceptinCodeEnum;
 import com.iflytek.common.exception.RRException;
 import com.iflytek.common.model.es.Attr;
 import com.iflytek.common.model.es.SkuEsModel;
-import com.iflytek.common.model.vo.WareHasStockVO;
+import com.iflytek.common.model.vo.product.WareHasStockVO;
 
 import com.iflytek.common.utils.ResultBody;
 import com.iflytek.gulimall.product.dao.*;
 import com.iflytek.gulimall.product.entity.*;
 import com.iflytek.gulimall.product.feign.SerachService;
 import com.iflytek.gulimall.product.feign.WareService;
-import com.iflytek.gulimall.product.vo.SkuItemVo;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;

@@ -12,5 +12,6 @@ spring:
       secret-key: g9nZchfL4c6UYEi8tp7zAdM5rsXXJa
       oss:
         endpoint: oss-cn-shanghai.aliyuncs.com
-
-
+feign:
+  hystrix:
+    enabled: true #开启熔断器

@@ -132,8 +132,8 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
         return skuItemVo;
     }
 
-
-    public SkuItemVo getSkuItem1(Long skuId)  {
+    @Override
+    public SkuItemVo getSkuItemNoFuture(Long skuId)  {
         long begin = System.currentTimeMillis();
         SkuItemVo skuItemVo = new SkuItemVo();
 

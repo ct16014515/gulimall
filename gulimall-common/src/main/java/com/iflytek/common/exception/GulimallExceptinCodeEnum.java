@@ -13,15 +13,18 @@ package com.iflytek.common.exception;
  * 12:订单
  * 13:购物车
  * 14:物流
+ * 15:会员
  */
 public enum GulimallExceptinCodeEnum {
     UNKNOWN_EXCEPTION(10000, "系统未知异常"),
     VALIDATE_EXCEPTION(10001, "参数校验异常"),
     PRODUCT_UP_ERROR(11000, "商品上架异常"),
-    PRODUCT_SEARCH_ERROR(11001, "搜索关键字不能为空");
-
-
-
+    PRODUCT_SEARCH_ERROR(11001, "搜索关键字不能为空"),
+    FEIGN_ERROR(10002, "远程调用失败"),
+    MEMBER_USERNAME_EXIT_ERROR(15000, "用户名已经存在"),
+    MEMBER_PHONE_EXIT_ERROR(15001, "手机号码已经存在"),
+    MEMBER_USERNAME_NOTEXIT_ERROR(15002, "用户名不存在"),
+    MEMBER_PASSWORD_ERROR(15003, "用户名不存在");
     private Integer code;
     private String message;
 

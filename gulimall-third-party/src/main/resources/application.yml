@@ -1,4 +1,4 @@
-spring:
+spring:  #spring.cloud.alicloud.sms
   datasource:
     druid:
       username: root
@@ -18,6 +18,15 @@ spring:
       bucket: gulimall-iflytek
       oss:
         endpoint: oss-cn-shanghai.aliyuncs.com
+      sms:
+        host: https://smsmsgs.market.alicloudapi.com
+        path: /sms/
+        appcode: 9ff6ad4a3b514c3780e554eb99c42b3d
+        sign: 1
+        skin: 2
+
+
+
   application:
     name: gulimall-third-party
 mybatis-plus:

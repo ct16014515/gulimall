@@ -1,8 +1,13 @@
 package com.iflytek.gulimall.member.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.iflytek.common.model.vo.memeber.MemberRegisterVO;
+import com.iflytek.common.model.vo.memeber.MemberVO;
+import com.iflytek.common.model.vo.memeber.UserLoginVO;
 import com.iflytek.common.utils.PageUtils;
+import com.iflytek.common.utils.ResultBody;
 import com.iflytek.gulimall.member.entity.MemberEntity;
+
 
 import java.util.Map;
 
@@ -16,5 +21,10 @@ import java.util.Map;
 public interface MemberService extends IService<MemberEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+
+    ResultBody register(MemberRegisterVO memberRegisterVO);
+
+
+    ResultBody<MemberVO> login(UserLoginVO userLoginVO);
 }
 

@@ -28,7 +28,8 @@ public class ItemController {
     public String getSkuItem(@PathVariable("skuId")Long skuId,Model model) throws ExecutionException, InterruptedException {
 
         SkuItemVo  skuItemVo=skuInfoService.getSkuItem(skuId);
-        model.addAttribute("SkuItemVo",skuItemVo);
+       // SkuItemVo  skuItemVo= skuInfoService.getSkuItemNoFuture(skuId);
+        model.addAttribute("skuItemVo",skuItemVo);
         System.out.println("开始查询商品详情:"+skuId);
         return "item";
     }
