@@ -25,10 +25,10 @@ public interface SkuSaleAttrValueDao extends BaseMapper<SkuSaleAttrValueEntity> 
             "\tssav.attr_value,\n" +
             "\tgroup_concat( DISTINCT info.sku_id ) sku_ids \n" +
             "FROM\n" +
-            "\tpms_sku_info info\n" +
-            "\tLEFT JOIN pms_sku_sale_attr_value ssav ON ssav.sku_id = info.sku_id \n" +
+            "\t pms_sku_info info\n" +
+            "\t LEFT JOIN pms_sku_sale_attr_value ssav ON ssav.sku_id = info.sku_id \n" +
             "WHERE\n" +
-            "\tinfo.spu_id = #{spuId}\n" +
+            "\t info.spu_id = #{spuId}\n" +
             "\t\n" +
             "GROUP BY\n" +
             "\tssav.attr_id,\n" +

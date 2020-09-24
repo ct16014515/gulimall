@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Map;
 
 
+import com.iflytek.common.model.vo.auth.Auth2SocialVO;
 import com.iflytek.common.model.vo.memeber.MemberRegisterVO;
 import com.iflytek.common.model.vo.memeber.MemberVO;
 import com.iflytek.common.model.vo.memeber.UserLoginVO;
@@ -103,13 +104,22 @@ public class MemberController {
      * @param userLoginVO
      * @return
      */
-    @PostMapping("/register")
+    @PostMapping("/login")
     public ResultBody<MemberVO> login(@RequestBody UserLoginVO userLoginVO) {
         ResultBody<MemberVO> resultBody= memberService.login(userLoginVO);
         return resultBody;
     }
 
-
+    /**
+     *
+     * @param auth2SocialVO
+     * @return
+     */
+    @PostMapping("auth2login")
+    public ResultBody<MemberVO> auth2Login(@RequestBody Auth2SocialVO auth2SocialVO) {
+        ResultBody<MemberVO> resultBody= memberService.auth2Login(auth2SocialVO);
+        return resultBody;
+    }
 
 
 

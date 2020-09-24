@@ -3,7 +3,7 @@ spring:
     druid:
       username: root
       password: root
-      url: jdbc:mysql://172.31.197.22:33306/gulimall_pms?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&autoReconnect=true&failOverReadOnly=false
+      url: jdbc:mysql://192.168.56.10:3306/gulimall_pms?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai&autoReconnect=true&failOverReadOnly=false
       driver-class-name: com.mysql.cj.jdbc.Driver
       initial-size: 60
       max-active: 2000
@@ -21,22 +21,13 @@ spring:
       removeAbandonedTimeout: 1800
   redis:
     database: 0
-    port: 16379
-    host: 172.31.197.22
-    lettuce:
-      pool:
-        max-active: 1024     #可用连接实例的最大数目，默认值为8；
-        max-idle: 200  #控制一个pool最多有多少个状态为idle
+    port: 6379
+    host: 192.168.56.10
+    password: root
   cache:
     type: redis  #使用redis作为springcache
     redis:
       time-to-live:  -1  #单位毫秒  没有过期时间
-  cloud:
-    nacos:
-      discovery:
-        server-addr: 172.31.197.22:18848
-        namespace: 4cbfefb7-7281-4479-8047-6aff8ab48ac2
-
   application:
     name: gulimall-product
   thymeleaf:
@@ -46,5 +37,8 @@ mybatis-plus:
   global-config:
     db-config:
       id-type: auto
+feign:
+  hystrix:
+    enabled: true #开启熔断器
 server:
-  port: 10002
+  port: 0

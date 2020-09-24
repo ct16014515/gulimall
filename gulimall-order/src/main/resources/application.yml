@@ -3,21 +3,42 @@ spring:
     druid:
       username: root
       password: root
-      url: jdbc:mysql://172.31.197.22:33306/gulimall_oms?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+      url: jdbc:mysql://192.168.56.10:3306/gulimall_oms?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
       driver-class-name: com.mysql.cj.jdbc.Driver
       min-idle: 5
       max-active: 100
-  cloud:
-    nacos:
-      discovery:
-        server-addr: 172.31.197.22:18848
+  redis:
+    database: 0
+    port: 6379
+    host: 192.168.56.10
+    password: root
+  rabbitmq:
+    host: 192.168.56.10
+    virtual-host: /
+    port: 5672
+    publisher-confirm-type: correlated  # 开启发送端消息抵达Broker确认 使用correlated方式
+    publisher-returns: true # 开启发送端消息抵达Queue确认 消息没有抵达队列会触发此回调
+    template:
+      mandatory: true #只要消息抵达Queue失败，就会异步发送优先回调returnfirm
+    listener:
+      simple:
+        acknowledge-mode: manual  #消费端手动确认
+  session:
+    store-type: redis
+  thymeleaf:
+    cache: false
   application:
     name: gulimall-order
-
 mybatis-plus:
   mapper-locations: classpath:/mapper/**/*.xml
   global-config:
     db-config:
       id-type: auto
+feign:
+    hystrix:
+      enabled: true
 server:
-  port: 9000
+  port: 0
+  servlet:
+    session:
+      timeout: 30m

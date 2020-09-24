@@ -53,7 +53,7 @@ public class WareOrderTaskEntity implements Serializable {
 	 */
 	private Integer paymentWay;
 	/**
-	 * 任务状态
+	 * 任务状态 1 用户已锁定,2用户已取消或者超时未支付,3用户已付款
 	 */
 	private Integer taskStatus;
 	/**

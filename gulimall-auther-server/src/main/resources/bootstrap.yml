@@ -6,10 +6,17 @@ spring:
   cloud:
     nacos:
       config:
-        server-addr: 172.31.197.22:18848 #nacos中心地址
+        server-addr: 192.168.56.10:8848 #nacos中心地址
         file-extension: yaml # 配置文件格式
-        namespace: 4cbfefb7-7281-4479-8047-6aff8ab48ac2
+        namespace: 93ab9b83-cca4-48b5-abad-8a46f12ac0ba
+        ext-config:
+          - data-id: nacos.yml
 
-feign:
-  hystrix:
-    enabled: true #开启熔断器
+auth2:
+  weibo:
+    client_id: 833884090
+    client_secret: 591a1eb2d83e3f0056e3356ed9b8afd4
+    grant_type: authorization_code
+    redirect_uri: http://auth.gulimall.com/auth2/weibo/login/success
+    request_url: https://api.weibo.com/oauth2/access_token
+

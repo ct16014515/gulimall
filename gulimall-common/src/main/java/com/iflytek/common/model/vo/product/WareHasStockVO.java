@@ -13,13 +13,5 @@ import java.io.Serializable;
 public class WareHasStockVO implements Serializable {
 
     private Long skuId;
-    private Integer hasStock;
-
-    public WareHasStockVO() {
-    }
-
-    public WareHasStockVO(Long skuId, Integer hasStock) {
-        this.skuId = skuId;
-        this.hasStock = hasStock;
-    }
+    private Integer hasStock; // 0没库存 1有库存
 }

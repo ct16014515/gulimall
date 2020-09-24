@@ -1,6 +1,7 @@
 package com.iflytek.gulimall.member.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.iflytek.common.model.vo.auth.Auth2SocialVO;
 import com.iflytek.common.model.vo.memeber.MemberRegisterVO;
 import com.iflytek.common.model.vo.memeber.MemberVO;
 import com.iflytek.common.model.vo.memeber.UserLoginVO;
@@ -26,5 +27,7 @@ public interface MemberService extends IService<MemberEntity> {
 
 
     ResultBody<MemberVO> login(UserLoginVO userLoginVO);
+
+    ResultBody<MemberVO> auth2Login(Auth2SocialVO auth2SocialVO);
 }
 

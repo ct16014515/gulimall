@@ -1,5 +1,6 @@
 package com.iflytek.gulimall.autherserver.feign;
 
+import com.iflytek.common.model.vo.auth.Auth2SocialVO;
 import com.iflytek.common.model.vo.memeber.MemberVO;
 import com.iflytek.common.model.vo.memeber.UserLoginVO;
 import com.iflytek.common.utils.ResultBody;
@@ -16,4 +17,6 @@ public interface MemberService {
     @PostMapping("member/member/login")
     public ResultBody<MemberVO>memberLogin(@RequestBody UserLoginVO userLoginVO);
 
+    @PostMapping("member/member/auth2login")
+    public ResultBody<MemberVO>auth2Login(@RequestBody Auth2SocialVO auth2SocialVO);
 }

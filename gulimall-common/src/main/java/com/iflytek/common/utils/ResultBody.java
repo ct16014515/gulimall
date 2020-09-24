@@ -13,6 +13,8 @@ public class ResultBody<T> {
     private T data;
 
     public ResultBody() {
+        this.code = 0;
+        this.msg = "success";
     }
 
     public ResultBody(int code, String msg, T data) {
@@ -20,11 +22,21 @@ public class ResultBody<T> {
         this.msg = msg;
         this.data = data;
     }
-
+    public ResultBody( T data) {
+        this.code = 0;
+        this.msg = "success";
+        this.data = data;
+    }
     public ResultBody(GulimallExceptinCodeEnum e, T data) {
         this.code = e.getCode();
         this.msg = e.getMessage();
         this.data = data;
     }
+
+    public ResultBody(GulimallExceptinCodeEnum e) {
+        this.code = e.getCode();
+        this.msg = e.getMessage();
+    }
+
 
 }

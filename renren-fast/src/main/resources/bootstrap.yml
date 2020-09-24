@@ -4,6 +4,8 @@ spring:
   cloud:
     nacos:
       config:
-        server-addr: 172.31.197.22:18848 #nacos中心地址
+        server-addr: 192.168.56.10:8848 #nacos中心地址
         file-extension: yaml # 配置文件格式
-        namespace: 4cbfefb7-7281-4479-8047-6aff8ab48ac2
+        namespace: 93ab9b83-cca4-48b5-abad-8a46f12ac0ba
+        ext-config:
+          - data-id: nacos.yml   #服务发现地址统一配置 如果只需要改一次服务发现地址

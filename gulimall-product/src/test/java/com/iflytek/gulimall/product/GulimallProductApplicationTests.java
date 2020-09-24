@@ -8,9 +8,11 @@ import com.iflytek.gulimall.product.vo.SkuItemVo;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.web.client.RestTemplate;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 @SpringBootTest
@@ -42,6 +44,13 @@ class GulimallProductApplicationTests {
         SkuItemVo skuItem1 = skuInfoService.getSkuItem(17L);
     }
 
+    @Autowired
+    RestTemplate restTemplate;
+
+    @Test
+    public void testRestTemplate() {
+        Map forObject = restTemplate.getForObject("http://gulimall.com/", Map.class);
+    }
 
 
 }

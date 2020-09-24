@@ -8,7 +8,7 @@
     <title>gulimall-首页</title>
     <link rel="stylesheet" href="static/index/css/swiper-3.4.2.min.css">
     <link rel="stylesheet" href="static/index/css/GL.css">
-    <link rel="shortcut icon" href="static/index/img/favicon.ico" >
+    <link rel="shortcut icon" href="static/index/img/favicon.ico">
     <script src="static/index/js/jquery-3.1.1.min.js" type="text/javascript" charset="utf-8"></script>
 
     <script src="static/index/js/swiper-3.4.2.jquery.min.js" type="text/javascript" charset="utf-8"></script>
@@ -96,14 +96,16 @@
             </b>
             <ul>
                 <li>
-                    <a href="http://auth.gulimall.com:9006/login.html">你好，请登录</a>
+                    <a th:href="${session.loginUser==null?'javascript:login()':'javascript:void(0)'}">
+                        你好, [[${session.loginUser==null?'请登录':session.loginUser.nickname}]]</a>
+                    <a th:if="${session.loginUser!=null}" href="javascript:logout()">退出</a>
+                </li>
+
+                <li>
+                    <a href="http://auth.gulimall.com/register.html" class="li_2">免费注册</a>
                 </li>
                 <li>
-                    <a href="http://auth.gulimall.com:9006/register.html" class="li_2">免费注册</a>
-                </li>
-                <span>|</span>
-                <li>
-                    <a href="static/#">我的订单</a>
+                    <a href="http://order.gulimall.com/list.html">我的订单</a>
                 </li>
 
 
@@ -116,12 +118,12 @@
             <input id="searchText" type="text" placeholder=""/>
             <span style="background: url(../static/index/img/img_12.png) 0 -1px;"></span>
             <!--<button><i class="glyphicon"></i></button>-->
-            <a href="javascript:search()"><img src="static/index/img/img_09.png" /></a>
+            <a href="javascript:search()"><img src="static/index/img/img_09.png"/></a>
         </div>
         <div class="header_ico">
-            <div class="header_gw">
+            <div class="header_gw" id="cart">
                 <img src="static/index/img/img_15.png"/>
-                <span><a href="static//购物车\One_JDshop.html">我的购物车</a></span>
+                <span><a href="http://cart.gulimall.com/cart.html">我的购物车</a></span>
                 <span>0</span>
             </div>
             <div class="header_ko">
@@ -610,10 +612,26 @@
 
 </body>
 <script type="text/javascript">
+    var href = window.location.href;
+    var encodehref = encodeURIComponent(href);
     function search() {
         var keyword = $("#searchText").val()
-        window.location.href = "http://search.gulimall.com:9006/list.html?keyword=" + keyword;
+        window.location.href = "http://search.gulimall.com/list.html?keyword=" + keyword;
     }
+
+    function login() {
+        window.location.href = "http://auth.gulimall.com/login.html?returnUrl=" + encodehref;
+    }
+    function logout() {
+        window.location.href = "http://auth.gulimall.com/logout.html?returnUrl="+encodehref;
+    }
+
+    $("#cart").mouseover(function(){
+        console.log("鼠标移动到购物车啦")
+    });
+
+
+
 
 </script>
 <script type="text/javascript" src="static/index/js/text.js"></script>

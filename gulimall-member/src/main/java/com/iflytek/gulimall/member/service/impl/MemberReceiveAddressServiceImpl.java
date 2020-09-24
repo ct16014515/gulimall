@@ -1,7 +1,11 @@
 package com.iflytek.gulimall.member.service.impl;
 
+import com.iflytek.common.utils.ResultBody;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 import java.util.Map;
+
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -24,6 +28,12 @@ public class MemberReceiveAddressServiceImpl extends ServiceImpl<MemberReceiveAd
         );
 
         return new PageUtils(page);
+    }
+
+    @Override
+    public ResultBody<List<MemberReceiveAddressEntity>> getMemberReceiveAddressByUid(Long uid) {
+        List<MemberReceiveAddressEntity> memberReceiveAddressEntityList = this.baseMapper.getMemberReceiveAddressByUid(uid);
+        return new ResultBody<>(memberReceiveAddressEntityList);
     }
 
 }

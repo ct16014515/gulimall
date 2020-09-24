@@ -20,7 +20,6 @@ public class GulimallAurherServerMvcConfig implements WebMvcConfigurer {
          *         return "register";
          *     }
          */
-       // registry.addViewController("login.html").setViewName("login");
         registry.addViewController("register.html").setViewName("register");
 
 

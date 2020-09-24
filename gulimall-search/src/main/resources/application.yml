@@ -1,10 +1,16 @@
 spring:
-  cloud:
-    nacos:
-      discovery:
-        server-addr: 172.31.197.22:18848
-        namespace: 4cbfefb7-7281-4479-8047-6aff8ab48ac2
   application:
     name: gulimall-search
+  elasticsearch:
+    hostname: 192.168.56.10
+    port: 9200
+    scheme: http
+  redis:
+    database: 0
+    port: 6379
+    host: 192.168.56.10
+    password: root
+  session:
+    store-type: redis
 server:
   port: 12000

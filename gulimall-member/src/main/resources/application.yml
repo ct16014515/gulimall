@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: gulimall-member
+  datasource:
+    druid:
+      username: root
+      password: root
+      url: jdbc:mysql://192.168.56.10:3306/gulimall_ums?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      min-idle: 5
+      max-active: 100
+mybatis-plus:
+  mapper-locations: classpath:/mapper/**/*.xml
+  global-config:
+    db-config:
+      id-type: auto
+server:
+  port: 0

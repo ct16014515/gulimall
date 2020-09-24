@@ -1,0 +1,390 @@
+
+<head>
+    <link rel="stylesheet" href="static/core/css/index.css">
+    <link rel="stylesheet" type="text/css" href="static/core/font/iconfont.css">
+</head>
+<div class="header_head" id="headId">
+    <div class="header_head_box">
+        <b class="header_head_p">
+            <div style="overflow: hidden">
+                <a href="static/search#" class="header_head_p_a1" style="width:73px;">
+                    谷粒商城首页
+                </a>
+                <a href="static/search#" class="header_head_p_a">
+                    <!--<img src="static/search/img/img_05.png" style="border-radius: 50%;"/>-->
+                    北京</a>
+            </div>
+            <div class="header_head_p_cs">
+                <a href="static/search#" style="background: #C81623;color: #fff;">北京</a>
+                <a href="static/search#">上海</a>
+                <a href="static/search#">天津</a>
+                <a href="static/search#">重庆</a>
+                <a href="static/search#">河北</a>
+                <a href="static/search#">山西</a>
+                <a href="static/search#">河南</a>
+                <a href="static/search#">辽宁</a>
+                <a href="static/search#">吉林</a>
+                <a href="static/search#">黑龙江</a>
+                <a href="static/search#">内蒙古</a>
+                <a href="static/search#">江苏</a>
+                <a href="static/search#">山东</a>
+                <a href="static/search#">安徽</a>
+                <a href="static/search#">浙江</a>
+                <a href="static/search#">福建</a>
+                <a href="static/search#">湖北</a>
+                <a href="static/search#">湖南</a>
+                <a href="static/search#">广东</a>
+                <a href="static/search#">广西</a>
+                <a href="static/search#">江西</a>
+                <a href="static/search#">四川</a>
+                <a href="static/search#">海南</a>
+                <a href="static/search#">贵州</a>
+                <a href="static/search#">云南</a>
+                <a href="static/search#">西藏</a>
+                <a href="static/search#">陕西</a>
+                <a href="static/search#">甘肃</a>
+                <a href="static/search#">青海</a>
+                <a href="static/search#">宁夏</a>
+                <a href="static/search#">新疆</a>
+                <a href="static/search#">港澳</a>
+                <a href="static/search#">台湾</a>
+                <a href="static/search#">钓鱼岛</a>
+                <a href="static/search#">海外</a>
+            </div>
+        </b>
+        <ul>
+            <li>
+                <a th:href="${session.loginUser==null?'javascript:login()':'javascript:void(0)'}">
+                    你好, [[${session.loginUser==null?'请登录':session.loginUser.nickname}]]</a>
+                <a th:if="${session.loginUser!=null}" href="javascript:logout()">退出</a>
+            </li>
+            <li>
+                <a href="static/search#">免费注册</a>
+            </li>
+            <span>|</span>
+            <li>
+                <a href="static/search#">我的订单</a>
+            </li>
+            <span>|</span>
+            <li class="header_wdjd" style="width:80px;">
+                <a href="static/search#">我的谷粒商城</a>
+                <img src="static/search/image/down-@1x.png"/>
+                <!--<b class="glyphicon glyphicon-menu-down"></b>-->
+                <div class="header_wdjd_txt">
+                    <ul>
+                        <li>
+                            <a href="static/search#">待处理订单</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">消息</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">返修退换货</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">我的回答</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">降价商品</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">我的关注</a>
+                        </li>
+                    </ul>
+                    <ul>
+                        <li>
+                            <a href="static/search#">我的京豆</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">我的优惠券</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">我的白条</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">我的理财</a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+            <span>|</span>
+            <li>
+                <a href="static/search#">谷粒商城会员</a>
+            </li>
+            <span>|</span>
+            <li>
+                <a href="static/search#">企业采购</a>
+            </li>
+            <span>|</span>
+            <li class="header_wdjd1">
+                <a href="static/search#">客户服务</a>
+                <img src="static/search/image/down-@1x.png"/>
+                <!--<b class="glyphicon glyphicon-menu-down"></b>-->
+                <div class="header_wdjd_txt">
+                    <ul>
+                        <p style="width:100%;">客户</p>
+                        <li>
+                            <a href="static/search#">帮助中心</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">售后服务</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">在线客服</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">意见建议</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">电话客服</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">客服邮箱</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">金融资讯</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">售全球客服</a>
+                        </li>
+                    </ul>
+                    <ul>
+                        <p style="width:100%;">商户</p>
+                        <li>
+                            <a href="static/search#">合作招商</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">学习中心</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">商家后台</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">京麦工作台</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">商家帮助</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">规则平台</a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+            <span>|</span>
+            <li class="header_wzdh">
+                <a href="static/search#">网站导航</a>
+                <img src="static/search/image/down-@1x.png"/>
+                <!--<b class="glyphicon glyphicon-menu-down"></b>-->
+                <div class="header_wzdh_txt">
+                    <ul style="width: 25%;">
+                        <p style="width:100%;">特色主题</p>
+                        <li>
+                            <a href="static/search#">谷粒商城试用</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">谷粒商城金融</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">全球售</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">国际站</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">谷粒商城会员</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">谷粒商城预售</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">买什么</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">俄语站</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">装机大师</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">0元评测</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">定期送</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">港澳售</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">优惠券</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">秒杀</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">闪购</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">印尼站</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">谷粒商城金融科技</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">In货推荐</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">陪伴计划</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">出海招商</a>
+                        </li>
+                    </ul>
+                    <ul style="width: 20%;">
+                        <p style="width:100%;">行业频道</p>
+                        <li>
+                            <a href="static/search#">手机</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">智能数码</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">玩3c</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">电脑办公</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">家用电器</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">谷粒商城智能</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">服装城</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">美妆馆</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">家装城</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">母婴</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">食品</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">运动户外</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">农资频道</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">整车</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">图书</a>
+                        </li>
+                    </ul>
+                    <ul style="width: 21%;">
+                        <p style="width:100%;">生活服务</p>
+                        <li>
+                            <a href="static/search#">白条</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">谷粒商城金融App</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">谷粒商城小金库</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">理财</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">智能家电</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">话费</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">水电煤</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">彩票</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">旅行</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">机票酒店</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">电影票</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">谷粒商城到家</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">谷粒商城众测</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">游戏</a>
+                        </li>
+                    </ul>
+                    <ul style="width: 23%; border-right: 0;">
+                        <p style="width:100%;">更多精选</p>
+                        <li>
+                            <a href="static/search#">合作招商</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">谷粒商城通信</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">谷粒商城E卡</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">企业采购</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">服务市场</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">办公生活馆</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">乡村招募</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">校园加盟</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">京友帮</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">谷粒商城社区</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">智能社区</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">游戏社区</a>
+                        </li>
+                        <li>
+                            <a href="static/search#">知识产权维权</a>
+                        </li>
+                    </ul>
+                </div>
+            </li>
+            <span>|</span>
+            <li class="header_sjjd">
+                <a href="static/search#">手机谷粒商城</a>
+                <div class="header_sjjd_div">
+                    <img src="static/search/img/01.png"/>
+                </div>
+            </li>
+        </ul>
+    </div>
+</div>
+

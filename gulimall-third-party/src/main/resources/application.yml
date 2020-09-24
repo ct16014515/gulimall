@@ -1,17 +1,5 @@
 spring:  #spring.cloud.alicloud.sms
-  datasource:
-    druid:
-      username: root
-      password: root
-      url: jdbc:mysql://172.31.197.22:33306/gulimall_pms?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
-      driver-class-name: com.mysql.cj.jdbc.Driver
-      min-idle: 5
-      max-active: 100
   cloud:
-    nacos:
-      discovery:
-        server-addr: 172.31.197.22:18848
-        namespace: 4cbfefb7-7281-4479-8047-6aff8ab48ac2
     alicloud:
       access-key: LTAI4Fz5L3Cv3oddewnSaGDy
       secret-key: g9nZchfL4c6UYEi8tp7zAdM5rsXXJa
@@ -24,15 +12,7 @@ spring:  #spring.cloud.alicloud.sms
         appcode: 9ff6ad4a3b514c3780e554eb99c42b3d
         sign: 1
         skin: 2
-
-
-
   application:
     name: gulimall-third-party
-mybatis-plus:
-  mapper-locations: classpath:/mapper/**/*.xml
-  global-config:
-    db-config:
-      id-type: auto
 server:
   port: 30000

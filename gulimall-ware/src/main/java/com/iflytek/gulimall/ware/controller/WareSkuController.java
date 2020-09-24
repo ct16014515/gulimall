@@ -7,6 +7,8 @@ import java.util.Map;
 
 import com.iflytek.common.model.vo.product.WareHasStockVO;
 
+import com.iflytek.common.model.vo.product.WareSkuLockVO;
+import com.iflytek.common.utils.ResultBody;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,6 +36,12 @@ public class WareSkuController {
         List<WareHasStockVO> list = wareSkuService.hasStock(skuIds);
         R r = R.ok().setData(list);
         return r;
+    }
+
+    @GetMapping("/hasStock/{skuId}")
+    public ResultBody<Integer> hasStockById(@PathVariable("skuId") Long skuId) {
+        ResultBody<Integer> resultBody = wareSkuService.hasStock(skuId);
+        return resultBody;
     }
 
 
@@ -89,8 +97,14 @@ public class WareSkuController {
     // @RequiresPermissions("ware:waresku:delete")
     public R delete(@RequestBody Long[] ids) {
         wareSkuService.removeByIds(Arrays.asList(ids));
-
         return R.ok();
     }
+
+    @PostMapping("/wareSkuLock")
+    public ResultBody wareSkuLock(@RequestBody WareSkuLockVO wareSkuLockVO) {
+        ResultBody resultBody = wareSkuService.wareSkuLock(wareSkuLockVO);
+        return resultBody;
+    }
+
 
 }

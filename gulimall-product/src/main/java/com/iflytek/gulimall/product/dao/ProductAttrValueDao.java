@@ -27,9 +27,9 @@ public interface ProductAttrValueDao extends BaseMapper<ProductAttrValueEntity> 
            "WHERE " +
            " attr_id IN ( " +
            "SELECT " +
-           " tattr_id  " +
+           " attr_id  " +
            "FROM " +
-           "tpms_product_attr_value  " +
+           " pms_product_attr_value  " +
            "WHERE " +
            " spu_id = #{spuId})")
     List<Attr> selectAttrsBySpuId(@Param("spuId") Long spuId);

@@ -1,6 +1,7 @@
 package com.iflytek.gulimall.autherserver.feign.factory;
 
 import com.iflytek.common.exception.GulimallExceptinCodeEnum;
+import com.iflytek.common.model.vo.auth.Auth2SocialVO;
 import com.iflytek.common.model.vo.memeber.MemberVO;
 import com.iflytek.common.model.vo.memeber.UserLoginVO;
 import com.iflytek.common.utils.ResultBody;
@@ -18,14 +19,22 @@ public class MemberServiceFallbackFactory implements FallbackFactory<MemberServi
         return new MemberService() {
             @Override
             public ResultBody memberRegister(RegisterVO registerVO) {
-                log.info("触发熔断,原因:{}", cause);
+                log.info("触发熔断,原因:{}", cause.toString());
                 return new ResultBody(GulimallExceptinCodeEnum.FEIGN_ERROR, null);
             }
 
             @Override
             public ResultBody<MemberVO> memberLogin(UserLoginVO userLoginVO) {
-                return null;
+                log.info("触发熔断,原因:{}", cause.toString());
+                return new ResultBody<>(GulimallExceptinCodeEnum.FEIGN_ERROR,null);
             }
+
+            @Override
+            public ResultBody<MemberVO> auth2Login(Auth2SocialVO auth2SocialVO) {
+                return new ResultBody<>(GulimallExceptinCodeEnum.FEIGN_ERROR,null);
+            }
+
+
         };
     }
 }

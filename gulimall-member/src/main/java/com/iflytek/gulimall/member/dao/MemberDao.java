@@ -14,8 +14,8 @@ import org.apache.ibatis.annotations.Select;
  */
 @Mapper
 public interface MemberDao extends BaseMapper<MemberEntity> {
-    @Select("SELECT COUNT (1) FROM ums_member where mobile = #{phone}")
+    @Select("SELECT COUNT(1) FROM ums_member where mobile = #{phone}")
     Integer selectCountByPhone(String phone);
-    @Select("SELECT COUNT (1) FROM ums_member where username = #{username}")
+    @Select("SELECT COUNT(1) FROM ums_member where username = #{username}")
     Integer selectCountByUsername(String username);
 }

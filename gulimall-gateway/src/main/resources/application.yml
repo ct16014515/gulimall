@@ -1,9 +1,5 @@
 spring:
   cloud:
-    nacos:
-      discovery:
-        server-addr: 172.31.197.22:18848
-        namespace: 4cbfefb7-7281-4479-8047-6aff8ab48ac2
     gateway:
       routes:
         #配置商品路http://localhost:88/api/product/category/list/tree  http://127.0.0.1:10002/product/category/list/tree
@@ -40,6 +36,16 @@ spring:
           uri: lb://gulimall-auther-server
           predicates:
             - Host=auth.gulimall.com
+        - id: gulimall-cart
+          uri: lb://gulimall-cart
+          predicates:
+            - Host=cart.gulimall.com
+        - id: gulimall-order
+          uri: lb://gulimall-order
+          predicates:
+             - Host=order.gulimall.com
+      x-forwarded:
+        host-enabled: true  #网关转发携带域名
   application:
     name: gulimall-gateway
 server:
