@@ -1,42 +1,49 @@
 package com.iflytek.gulimall.order.service.impl;
 
 import com.alibaba.fastjson.TypeReference;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.IdWorker;
-import com.baomidou.mybatisplus.extension.conditions.query.QueryChainWrapper;
-import com.iflytek.common.exception.RRException;
-import com.iflytek.common.model.enume.OrderStatusEnum;
-import com.iflytek.common.model.vo.cart.CartItemVO;
-import com.iflytek.common.model.vo.memeber.MemberVO;
-import com.iflytek.common.model.vo.order.OrderEntityVO;
-import com.iflytek.common.model.vo.order.OrderItemVO;
-import com.iflytek.common.model.vo.product.SkuInfoPriceVO;
-import com.iflytek.common.model.vo.product.SkuOrderItem;
-import com.iflytek.common.model.vo.product.WareHasStockVO;
-import com.iflytek.common.model.vo.product.WareSkuLockVO;
-import com.iflytek.common.utils.R;
-import com.iflytek.common.utils.ResultBody;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.iflytek.gulimall.common.exception.RRException;
+import com.iflytek.gulimall.common.feign.*;
+import com.iflytek.gulimall.common.feign.vo.*;
+import com.iflytek.gulimall.common.model.enume.OrderPayTypeEnum;
+import com.iflytek.gulimall.common.model.enume.OrderStatusEnum;
+
+import com.iflytek.gulimall.common.model.mq.to.OrderEntityPayedTO;
+import com.iflytek.gulimall.common.model.mq.to.OrderEntityReleaseTO;
+
+import com.iflytek.gulimall.common.model.mq.to.SecKillOrderCreateTO;
+import com.iflytek.gulimall.common.utils.PageUtils;
+import com.iflytek.gulimall.common.utils.Query;
+import com.iflytek.gulimall.common.utils.R;
+import com.iflytek.gulimall.common.utils.ResultBody;
+import com.iflytek.gulimall.order.config.AlipayTemplate;
+import com.iflytek.gulimall.order.dao.OrderDao;
+import com.iflytek.gulimall.order.dao.OrderItemDao;
+import com.iflytek.gulimall.order.entity.OrderEntity;
 import com.iflytek.gulimall.order.entity.OrderItemEntity;
 
-import com.iflytek.gulimall.order.feign.CartService;
-import com.iflytek.gulimall.order.feign.MemberService;
-import com.iflytek.gulimall.order.feign.ProductService;
-import com.iflytek.gulimall.order.feign.WareService;
 import com.iflytek.gulimall.order.interceptor.LoginInterceptor;
 import com.iflytek.gulimall.order.service.OrderItemService;
+import com.iflytek.gulimall.order.service.OrderService;
 import com.iflytek.gulimall.order.vo.*;
+import com.lly835.bestpay.model.PayResponse;
 import com.rabbitmq.client.Channel;
-import io.seata.spring.annotation.GlobalTransactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitHandler;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.task.TaskExecutor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.request.RequestAttributes;
+import org.springframework.web.context.request.RequestContextHolder;
 
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -46,21 +53,9 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.iflytek.common.utils.PageUtils;
-import com.iflytek.common.utils.Query;
-
-import com.iflytek.gulimall.order.dao.OrderDao;
-import com.iflytek.gulimall.order.entity.OrderEntity;
-import com.iflytek.gulimall.order.service.OrderService;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.client.RestTemplate;
-import org.springframework.web.context.request.RequestAttributes;
-import org.springframework.web.context.request.RequestContextHolder;
-
-import static com.iflytek.common.constant.OrderConstant.*;
+import static com.iflytek.gulimall.common.constant.CouponConstant.*;
+import static com.iflytek.gulimall.common.constant.MqConstant.*;
+import static com.iflytek.gulimall.common.constant.OrderConstant.ORDER_TOKEN_REDIS_PREFIX;
 
 
 @Service("orderService")
@@ -69,17 +64,17 @@ import static com.iflytek.common.constant.OrderConstant.*;
 public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> implements OrderService {
 
     @Autowired
-    private CartService cartService;
+    private CartServiceAPI cartServiceApi;
     @Autowired
-    private MemberService memberService;
+    private MemberServiceAPI memberServiceAPI;
     @Autowired
     private TaskExecutor executor;
 
     @Autowired
-    private WareService wareService;
+    private WareServiceAPI wareServiceAPI;
 
     @Autowired
-    private ProductService productService;
+    private ProductServiceAPI productServiceAPI;
     @Autowired
     private StringRedisTemplate redisTemplate;
 
@@ -89,8 +84,14 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     private OrderService orderService;
     @Autowired
     private OrderDao orderDao;
+
     @Autowired
-    private RabbitTemplate rabbitTemplate;
+    MqServiceAPI mqServiceAPI;
+    @Autowired
+    OrderItemDao orderItemDao;
+
+    @Autowired
+    AlipayTemplate alipayTemplate;
 
 
     @Override
@@ -120,7 +121,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
              *
              */
             RequestContextHolder.setRequestAttributes(requestAttributes);
-            ResultBody<List<CartItemVO>> resultBody = cartService.getCartListByUid(String.valueOf(userId));
+            ResultBody<List<CartItemVO>> resultBody = cartServiceApi.getCartListByUid(String.valueOf(userId));
             List<CartItemVO> cartItemVOS = resultBody.getData();
             orderConfirmVO.setOrderItemVOS(cartItemVOS);
         }, executor);
@@ -129,7 +130,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             List<CartItemVO> cartItemVOS = orderConfirmVO.getOrderItemVOS();
             List<Long> skuIds = cartItemVOS.stream().map((itemVO) -> itemVO.getSkuId()).collect(Collectors.toList());
             //查询商品的库存
-            R hasStock = wareService.hasStock(skuIds);
+            R hasStock = wareServiceAPI.hasStock(skuIds);
             List<WareHasStockVO> hasStockVOS = hasStock.getData(new TypeReference<List<WareHasStockVO>>() {
             });
             Map<Long, Integer> hasStockMap = hasStockVOS.stream().collect(Collectors.toMap(WareHasStockVO::getSkuId, WareHasStockVO::getHasStock));
@@ -142,7 +143,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         CompletableFuture<Void> priceFuture = listCompletableFuture.thenRunAsync(() -> {
             List<CartItemVO> cartItemVOS = orderConfirmVO.getOrderItemVOS();
             List<Long> skuIds = cartItemVOS.stream().map((itemVO) -> itemVO.getSkuId()).collect(Collectors.toList());
-            ResultBody<List<SkuInfoPriceVO>> skuPriceBySkuIds = productService.getSkuPriceBySkuIds(skuIds);
+            ResultBody<List<SkuInfoPriceVO>> skuPriceBySkuIds = productServiceAPI.getSkuPriceBySkuIds(skuIds);
             List<SkuInfoPriceVO> skuInfoPriceVOS = skuPriceBySkuIds.getData();
             Map<Long, BigDecimal> collect = skuInfoPriceVOS.stream().collect(Collectors.toMap(SkuInfoPriceVO::getSkuId, SkuInfoPriceVO::getPrice));
             /**
@@ -170,7 +171,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             /**
              * 收货地址
              */
-            ResultBody<List<MemberReceiveAddressVO>> memberReceiveAddressByUid = memberService.getMemberReceiveAddressByUid(userId);
+            ResultBody<List<MemberReceiveAddressVO>> memberReceiveAddressByUid = memberServiceAPI.getMemberReceiveAddressByUid(userId);
             List<MemberReceiveAddressVO> memberReceiveAddressVOS = memberReceiveAddressByUid.getData();
             Optional<MemberReceiveAddressVO> first = memberReceiveAddressVOS.stream().filter(item -> item.getDefaultStatus() == 1).findFirst();
             if (first.isPresent()) {
@@ -216,8 +217,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     //根据地址id获取运费
     @Override
     public BigDecimal getFreightMoneyByAddressId(Long addressId) {
-        long money = addressId + 10L;
-        return new BigDecimal(money);
+        return new BigDecimal("0.01");
     }
 
     /**
@@ -233,13 +233,16 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         OrderSubmitResposeVO orderSubmitResposeVO = new OrderSubmitResposeVO();
         MemberVO memberVO = LoginInterceptor.toThreadLocal.get();
         String orderToken = orderSubmitVO.getOrderToken();
+        /**
+         *使用lua脚本,保证令牌比较和删除令牌是原子性操作,结果只能是Long, Boolean, List
+         * https://www.cnblogs.com/liuyu7177/p/10918250.html
+         * the script result type. Should be one of Long, Boolean, List, or deserialized value type
+         */
         String script = "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";
-        //使用lua脚本,保证令牌比较和删除令牌是原子性操作,结果只能是Long, Boolean, List
-        // the script result type. Should be one of Long, Boolean, List, or deserialized value type
         Long result = redisTemplate.execute(new DefaultRedisScript<Long>(script, Long.class),
                 Arrays.asList(ORDER_TOKEN_REDIS_PREFIX + memberVO.getUserId()),
                 orderToken);
-        if (result == 1L) {
+        if (result != null && result == 1L) {
             //令牌操作成功,创建订单
             OrderCreateVO orderCreateVO = createOrderCreateVO(orderSubmitVO);
             BigDecimal subtract = orderCreateVO.getOrderEntity().getPayAmount().subtract(orderSubmitVO.getPayMoney());
@@ -258,15 +261,15 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     }
 
     @Override
-    public OrderEntity getOrderEntityByOrderIdAndUserId(Long orderId, Long userId) {
-        OrderEntity orderEntity = orderDao.selectOne(new QueryWrapper<OrderEntity>().eq("id", orderId).eq("member_id", userId));
+    public OrderEntity getOrderEntityByOrderSnAndUserId(String orderSn, Long userId) {
+        OrderEntity orderEntity = orderDao.selectOne(new QueryWrapper<OrderEntity>().eq("order_sn", orderSn).eq("member_id", userId));
         return orderEntity;
     }
 
     @Override
-    public ResultBody<OrderEntity> getOrderEntityByOrderSn(String orderSn) {
+    public OrderEntity getOrderEntityByOrderSn(String orderSn) {
         OrderEntity orderEntity = orderDao.selectOne(new QueryWrapper<OrderEntity>().eq("order_sn", orderSn));
-        return new ResultBody<>(orderEntity);
+        return orderEntity;
     }
 
     /**
@@ -279,7 +282,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
      */
     @Override
     @Transactional
-    public void closeOrder(OrderEntity entity) {
+    public void closeOrder(OrderEntityReleaseTO entity) {
         OrderEntity orderEntity = orderDao.selectOne(new QueryWrapper<OrderEntity>().
                 eq("id", entity.getId()).
                 eq("status", OrderStatusEnum.CREATE_NEW.getCode()));
@@ -288,10 +291,213 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             update.setId(entity.getId());
             update.setStatus(OrderStatusEnum.CANCLED.getCode());
             orderDao.updateById(update);
-            OrderEntityVO orderEntityVO = new OrderEntityVO();
-            BeanUtils.copyProperties(orderEntity, orderEntityVO);
-            rabbitTemplate.convertAndSend(MQ_ORDER_EXCHANGE, MQ_ORDERTOSTOCK_RELEASE_ROUTINGKEY, orderEntityVO);
+            log.info("*****用户超时未支付,订单已自动取消,订单号:{}******", entity.getOrderSn());
+            /**
+             * 发送消息,通知库存服务解锁库存
+             */
+            SendMessageRequest request = SendMessageRequest.builder().exchange(MQ_ORDER_EXCHANGE).
+                    routingKey(MQ_ORDERTOWARE_RELEASE_ROUTINGKEY).className(entity.getClass().getName())
+                    .object(entity).build();
+            mqServiceAPI.sendMessage(request);
+            /**
+             * 支付宝电脑网站支付必须用户在登录支付宝后才能关闭订单和查询订单状态,如果不登录会提示交易不存在40004错误
+             * 这与业务不符,所以使用支付宝自己的自动关单功能,不主动触发关闭订单接口.
+             */
+            //closePayOrder(orderEntity);
         }
+    }
+
+    private void closePayOrder(OrderEntity entity) {
+        if (OrderPayTypeEnum.ALI.getCode().equals(entity.getPayType())) {
+            alipayTemplate.closeOrder(entity.getOrderSn());
+        }
+
+
+    }
+
+    @Override
+    public String getSkuNameByOrderSn(String orderSn) {
+        String skuName = orderItemDao.getSkuNameByOrderSn(orderSn);
+        return skuName;
+    }
+
+    @Override
+
+    public PayVO getPayVOByOrderSn(String orderSn) {
+        OrderEntity orderEntity = getOrderEntityByOrderSn(orderSn);
+        PayVO payVo = new PayVO();
+        payVo.setTotal_amount(orderEntity.getPayAmount().toString());
+        payVo.setOut_trade_no(orderSn);
+        String skuName = getSkuNameByOrderSn(orderSn);
+        //支付宝支付的subject不能包含特殊符号,不然返回页面会报INVALID_PARAMETER错误
+        skuName = skuName.replaceAll("[\n`~!@#$%^&*()+=|{}':;',\\[\\].<>/?~！@#￥%……&*（）——+|{}【】'；：\"\"。， 、？]", "");
+        payVo.setSubject(skuName);
+        payVo.setBody("测试");
+        /**
+         * 修改订单的支付方式为支付宝
+         */
+        updatePayTypeByOrderId(orderEntity.getId(), OrderPayTypeEnum.ALI.getCode());
+        return payVo;
+    }
+
+    @Transactional
+    public void updatePayTypeByOrderId(Long orderId, Integer payType) {
+        OrderEntity update = new OrderEntity();
+        update.setId(orderId);
+        update.setPayType(payType);
+        this.updateById(update);
+
+    }
+
+    @Override
+    @Transactional
+    public void createSecKillOrder(SecKillOrderCreateTO entityTO) {
+        OrderEntity orderEntity = baseMapper.selectOne(new QueryWrapper<OrderEntity>().eq("order_sn", entityTO.getOrderSn()));
+        OrderItemEntity orderItemEntity = orderItemDao.selectOne(new QueryWrapper<OrderItemEntity>().eq("order_sn", entityTO.getOrderSn()));
+        if (orderEntity == null && orderItemEntity == null) {
+            OrderEntity saveOrder = new OrderEntity();
+            saveOrder.setOrderSn(entityTO.getOrderSn());
+            saveOrder.setStatus(OrderStatusEnum.CREATE_NEW.getCode());
+            saveOrder.setModifyTime(new Date());
+            saveOrder.setCreateTime(new Date());
+            saveOrder.setMemberId(entityTO.getMemberId());
+            saveOrder.setPayAmount(entityTO.getPrice().multiply(new BigDecimal(entityTO.getNumber().toString())));
+            baseMapper.insert(saveOrder);
+            OrderItemEntity orderItemSave = new OrderItemEntity();
+            orderItemSave.setOrderSn(entityTO.getOrderSn());
+            orderItemSave.setSkuId(entityTO.getSkuId());
+            orderItemSave.setSkuQuantity(entityTO.getNumber());
+            orderItemDao.insert(orderItemSave);
+        }
+    }
+
+
+    @Override
+    public PageUtils orderWithOrderItemList(Map<String, Object> params) {
+        MemberVO memberVO = LoginInterceptor.toThreadLocal.get();
+        IPage<OrderEntity> page = page(
+                new Query<OrderEntity>().getPage(params),
+                new QueryWrapper<OrderEntity>().eq("member_id", memberVO.getUserId()).
+                        orderByDesc("create_time")
+        );
+        IPage<OrderEntityVO> pageVO = new Page<OrderEntityVO>();
+        List<OrderEntity> records = page.getRecords();
+        List<OrderEntityVO> orderEntityVOS = records.stream().map(item -> {
+            OrderEntityVO orderEntityVO = new OrderEntityVO();
+            BeanUtils.copyProperties(item, orderEntityVO);
+            orderEntityVO.setStatusStr(OrderStatusEnum.getMsg(item.getStatus()));
+            List<OrderItemVO> orderItemVOS = orderItemDao.selectOrderItemVOListByOrderSn(orderEntityVO.getOrderSn());
+            orderEntityVO.setOrderItemVOS(orderItemVOS);
+            return orderEntityVO;
+        }).collect(Collectors.toList());
+        pageVO.setRecords(orderEntityVOS);
+        pageVO.setTotal(page.getTotal());
+        pageVO.setCurrent(page.getCurrent());
+        pageVO.setSize(page.getSize());
+        pageVO.setPages(page.getPages());
+        return new PageUtils(pageVO);
+    }
+
+    /**
+     * 支付宝回调
+     * 商户需要验证该通知数据中的 out_trade_no 是否为商户系统中创建的订单号；
+     * 判断 total_amount 是否确实为该订单的实际金额（即商户订单创建时的金额）；
+     * 校验通知中的 seller_id（或者 seller_email) 是否为 out_trade_no 这笔单据的对应的操作方（有的时候，一个商户可能有多个 seller_id/seller_email）；
+     * 验证 app_id 是否为该商户本身
+     *
+     * @param stringMap
+     * @return
+     */
+    @Override
+    @Transactional
+    public String aliPayCallBack(Map<String, String> stringMap) {
+        try {
+            String tradeStatus = stringMap.get("trade_status");
+            if ("TRADE_SUCCESS".equals(tradeStatus)) {
+                String outTradeNo = stringMap.get("out_trade_no");//订单号
+                OrderEntity orderEntity = this.getOrderEntityByOrderSn(outTradeNo);
+                String payAmount = orderEntity.getPayAmount().setScale(2, BigDecimal.ROUND_HALF_UP).toString();//订单的金额
+                String totalAmount = stringMap.get("total_amount");
+                String appId = stringMap.get("app_id");
+                if (OrderStatusEnum.CREATE_NEW.getCode().equals(orderEntity.getStatus())
+                        && payAmount.equals(totalAmount) && alipayTemplate.app_id.equals(appId)) {
+                    updateOrderStatus(outTradeNo, payAmount, orderEntity, 1);
+                    return "success";
+                }
+            }
+            return "fail";
+        } catch (Exception e) {
+            return "fail";
+        }
+    }
+
+    @Override
+    @Transactional
+    public String wxPayCallBack(PayResponse payResponse) {
+        OrderEntity orderEntity = orderService.getOrderEntityByOrderSn(payResponse.getOrderId());
+        SortedMap<String, Object> parameterMap = new TreeMap<String, Object>();
+        if (orderEntity != null) {
+            Integer status = orderEntity.getStatus();
+            if (OrderStatusEnum.PAYED.getCode().equals(status)) {
+                parameterMap.put("return_code", "SUCCESS");
+                parameterMap.put("return_msg", "OK");
+            }
+            if (OrderStatusEnum.CREATE_NEW.getCode().equals(status)) {
+                String payAmount = orderEntity.getPayAmount().setScale(2, BigDecimal.ROUND_HALF_UP).toString();//订单的金额
+                String orderAmount = payResponse.getOrderAmount().toString();
+                if (payAmount.equals(orderAmount)) {
+                    String orderSn = orderEntity.getOrderSn();
+                    updateOrderStatus(orderSn, payAmount, orderEntity, 2);
+                    parameterMap.put("return_code", "SUCCESS");
+                    parameterMap.put("return_msg", "OK");
+                }
+            }
+        } else {
+            parameterMap.put("return_code", "FAIL");
+        }
+        return setRequestXml(parameterMap);
+    }
+
+
+    //请求xml组装
+    public String setRequestXml(SortedMap<String, Object> parameters) {
+        StringBuffer sb = new StringBuffer();
+        sb.append("<xml>");
+        Set es = parameters.entrySet();
+        Iterator it = es.iterator();
+        while (it.hasNext()) {
+            Map.Entry entry = (Map.Entry) it.next();
+            String key = (String) entry.getKey();
+            String value = (String) entry.getValue();
+            sb.append("<" + key + ">" + "<![CDATA[" + value + "]]></" + key + ">");
+        }
+        sb.append("</xml>");
+        return sb.toString();
+    }
+
+    /**
+     * 修改订单状态
+     *
+     * @param outTradeNo
+     * @param payAmount
+     * @param orderEntity
+     */
+    public void updateOrderStatus(String outTradeNo, String payAmount, OrderEntity orderEntity, Integer payType) {
+        OrderEntity update = new OrderEntity();
+        update.setId(orderEntity.getId());
+        update.setOrderSn(outTradeNo);
+        update.setStatus(OrderStatusEnum.PAYED.getCode());
+        update.setPayType(payType);
+        orderDao.updateById(update);
+        log.info("用户:{}成功支付,订单号:{},支付金额:{},支付方式:{}", orderEntity.getMemberId(), outTradeNo, payAmount, payType == 1 ? "支付宝" : "微信");
+        /**
+         * 通知库存服务,真正减库存并修改库存状态
+         */
+        OrderEntityPayedTO orderEntityPayedTO = new OrderEntityPayedTO();
+        BeanUtils.copyProperties(update, orderEntityPayedTO);
+        SendMessageRequest request = SendMessageRequest.builder().exchange(MQ_ORDER_EXCHANGE).object(orderEntityPayedTO)
+                .routingKey(MQ_ORDERTOWARE_REDUCE_ROUTINGKEY).className(OrderEntityPayedTO.class.getName()).build();
+        mqServiceAPI.sendMessage(request);
     }
 
 
@@ -309,7 +515,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             return skuOrderItem;
         }).collect(Collectors.toList());
         wareSkuLockVO.setSkuOrderItems(collect);
-        ResultBody booleanResultBody = wareService.wareSkuLock(wareSkuLockVO);
+        ResultBody booleanResultBody = wareServiceAPI.wareSkuLock(wareSkuLockVO);
         int code = booleanResultBody.getCode();
         if (code == 0) {
             //锁定库存成功
@@ -317,9 +523,35 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             orderSubmitResposeVO.setOrderEntity(orderEntity);
             //TODO,远程调用减用户积分,假如失败,订单可以回滚,但库存不能回滚
             // int i=2/0;
-            //定时关单,创建订单后,发送消息给延时队列(1分钟),1分钟后,延时队列给释放队列
+            //定时关单功能,创建订单后,发送消息给延时队列(1分钟),1分钟内用户未支付,1分钟后,延时队列给释放库存队列
             // 消息经过订单释放队列给消费者,消费者拿到消息判断是未付款的订单,将订单改成已取消状态
-            rabbitTemplate.convertAndSend(MQ_ORDER_EXCHANGE, MQ_ORDER_CREATE_ROUTINGKEY, orderEntity);
+//            String timeId = IdWorker.getTimeId();
+//            CorrelationData correlationData = new CorrelationData(timeId);
+//            MqMessage1 mqMessage1 = new MqMessage1();
+//            mqMessage1.setMessageId(timeId);
+//            mqMessage1.setContent(JSON.toJSONString(orderEntity));
+//            String name = orderEntity.getClass().getName();
+//            mqMessage1.setClassType(name);
+//            mqMessage1.setToExchange(MQ_ORDER_EXCHANGE);
+//            mqMessage1.setRoutingKey(MQ_ORDER_CREATE_ROUTINGKEY);
+//            mqMessage1.setCreateTime(new Date());
+//            mqMessage1.setUpdateTime(new Date());
+//            try {
+//                mqMessage1.setMessageStatus(1);
+//                rabbitTemplate.convertAndSend(MQ_ORDER_EXCHANGE, MQ_ORDER_CREATE_ROUTINGKEY, orderEntity, correlationData);
+//            } catch (Exception e) {
+//                mqMessage1.setMessageStatus(2);
+//            } finally {
+//                log.info("messageId为:{}",timeId);
+//                mqMessage1Dao.insert(mqMessage1);
+//            }
+            OrderEntityReleaseTO orderEntityReleaseTO = new OrderEntityReleaseTO();
+            BeanUtils.copyProperties(orderEntity, orderEntityReleaseTO);
+
+            SendMessageRequest sendMessageRequest = SendMessageRequest.builder().exchange(MQ_ORDER_EXCHANGE).routingKey(MQ_ORDER_CREATE_ROUTINGKEY)
+                    .object(orderEntityReleaseTO).className(orderEntityReleaseTO.getClass().getName()).build();
+
+            mqServiceAPI.sendMessage(sendMessageRequest);
         } else {
             throw new RRException("库存不足", 3);
         }
@@ -331,14 +563,13 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         orderEntity.setModifyTime(new Date());
         orderEntity.setCreateTime(new Date());
         orderService.save(orderEntity);
-        Long orderId = orderEntity.getId();
         orderItemService.saveBatch(orderCreateVO.getOrderItemEntities());
 
     }
 
     private OrderCreateVO createOrderCreateVO(OrderSubmitVO orderSubmitVO) {
         OrderCreateVO orderCreateVO = new OrderCreateVO();
-        String orderSn = IdWorker.getTimeId();
+        String orderSn = IdWorker.getIdStr();
         //创建订单实体
         OrderEntity orderEntity = createOrderEntity(orderSubmitVO, orderSn);
         //创建订单项列表
@@ -375,6 +606,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         orderEntity.setTotalAmount(total);
         //设置应付总额(总额+运费)
         orderEntity.setPayAmount(total.add(orderEntity.getFreightAmount()));
+        //orderEntity.setPayAmount(new BigDecimal("0.01"));
         orderEntity.setCouponAmount(coupon);
         orderEntity.setPromotionAmount(promotion);
         orderEntity.setIntegrationAmount(intergration);
@@ -396,12 +628,12 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
      */
     private List<OrderItemEntity> createOrderItemEntities(String orderSn) {
         MemberVO memberVO = LoginInterceptor.toThreadLocal.get();
-        ResultBody<List<CartItemVO>> listByUid = cartService.getCartListByUid(String.valueOf(memberVO.getUserId()));
+        ResultBody<List<CartItemVO>> listByUid = cartServiceApi.getCartListByUid(String.valueOf(memberVO.getUserId()));
         List<CartItemVO> itemVOList = listByUid.getData();
         Map<Long, Integer> skuCountMap = itemVOList.stream().collect(Collectors.toMap(CartItemVO::getSkuId, CartItemVO::getSkuCount));
         List<Long> skuIds = itemVOList.stream().map(itemVO -> itemVO.getSkuId()).collect(Collectors.toList());
         //在商品服务将字段构建好,直接拷贝
-        List<OrderItemVO> orderItemVOS = productService.getOrderItemsBySkuIds(skuIds);
+        List<OrderItemVO> orderItemVOS = productServiceAPI.getOrderItemsBySkuIds(skuIds);
         List<OrderItemEntity> collect = orderItemVOS.stream().map(orderItemVO -> {
             OrderItemEntity orderItemEntity = new OrderItemEntity();
             BeanUtils.copyProperties(orderItemVO, orderItemEntity);
@@ -443,7 +675,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
         orderEntity.setSourceType(0);//订单来源[0->PC订单；1->app订单]
         orderEntity.setStatus(OrderStatusEnum.CREATE_NEW.getCode());//待付款
         orderEntity.setAutoConfirmDay(14);
-        MemberReceiveAddressVO memberReceiveAddressVO = memberService.info(orderSubmitVO.getAddressId()).getData();
+        MemberReceiveAddressVO memberReceiveAddressVO = memberServiceAPI.getMemberreceiveaddressById(orderSubmitVO.getAddressId()).getData();
         orderEntity.setReceiverName(memberReceiveAddressVO.getName());
         orderEntity.setReceiverPhone(memberReceiveAddressVO.getPhone());
         orderEntity.setReceiverPostCode(memberReceiveAddressVO.getPostCode());

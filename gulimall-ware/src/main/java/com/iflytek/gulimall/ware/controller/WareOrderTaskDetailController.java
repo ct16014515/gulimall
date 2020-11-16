@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.iflytek.gulimall.ware.entity.WareOrderTaskDetailEntity;
 import com.iflytek.gulimall.ware.service.WareOrderTaskDetailService;
-import com.iflytek.common.utils.PageUtils;
-import com.iflytek.common.utils.R;
+import com.iflytek.gulimall.common.utils.PageUtils;
+import com.iflytek.gulimall.common.utils.R;
 
 
 

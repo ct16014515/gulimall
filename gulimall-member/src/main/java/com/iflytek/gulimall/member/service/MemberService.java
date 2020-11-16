@@ -1,12 +1,13 @@
 package com.iflytek.gulimall.member.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.iflytek.common.model.vo.auth.Auth2SocialVO;
-import com.iflytek.common.model.vo.memeber.MemberRegisterVO;
-import com.iflytek.common.model.vo.memeber.MemberVO;
-import com.iflytek.common.model.vo.memeber.UserLoginVO;
-import com.iflytek.common.utils.PageUtils;
-import com.iflytek.common.utils.ResultBody;
+
+import com.iflytek.gulimall.common.feign.vo.Auth2SocialVO;
+import com.iflytek.gulimall.common.feign.vo.MemberVO;
+import com.iflytek.gulimall.common.feign.vo.RegisterVO;
+import com.iflytek.gulimall.common.feign.vo.UserLoginVO;
+import com.iflytek.gulimall.common.utils.PageUtils;
+import com.iflytek.gulimall.common.utils.ResultBody;
 import com.iflytek.gulimall.member.entity.MemberEntity;
 
 
@@ -23,7 +24,7 @@ public interface MemberService extends IService<MemberEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
 
-    ResultBody register(MemberRegisterVO memberRegisterVO);
+    ResultBody register(RegisterVO registerVO);
 
 
     ResultBody<MemberVO> login(UserLoginVO userLoginVO);

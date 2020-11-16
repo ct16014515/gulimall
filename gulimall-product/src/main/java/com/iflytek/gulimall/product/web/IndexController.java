@@ -1,5 +1,8 @@
 package com.iflytek.gulimall.product.web;
 
+import com.iflytek.gulimall.common.feign.SeckillServiceAPI;
+import com.iflytek.gulimall.common.feign.vo.SecSessionSkuVO;
+import com.iflytek.gulimall.common.utils.ResultBody;
 import com.iflytek.gulimall.product.entity.CategoryEntity;
 import com.iflytek.gulimall.product.service.CategoryService;
 import com.iflytek.gulimall.product.vo.Catalog2Vo;
@@ -12,13 +15,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import java.util.List;
 import java.util.Map;
 
-/**
- * 跟页面相关的放入web文件夹
- */
+
 @Controller
 public class IndexController {
     @Autowired
     CategoryService categoryService;
+    @Autowired
+    SeckillServiceAPI seckillServiceAPI;
 
 
     @GetMapping({"/", "index.html"})
@@ -26,7 +29,10 @@ public class IndexController {
         //查询一级分类
         List<CategoryEntity> categories = categoryService.findFirstCategory();
         model.addAttribute("categories", categories);
-        //thymeleaf默认前缀是classpath:/templates/ 默认后缀 .html 视图解析器会生成此路径
+        //查询当前时间的秒杀商品,如果秒杀商品挂了,会影响首页展示,应从前端发送ajax请求
+        //ResultBody<List<SecSessionSkuVO>> resultBody = seckillServiceAPI.getCurrentSecSessionSkuVO();
+        //List<SecSessionSkuVO> secSessionSkuVOS = resultBody.getData();
+        //model.addAttribute("secSessionSkuVOS", secSessionSkuVOS);
         return "index";
     }
 

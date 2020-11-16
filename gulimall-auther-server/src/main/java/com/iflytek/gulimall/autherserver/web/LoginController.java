@@ -1,12 +1,16 @@
 package com.iflytek.gulimall.autherserver.web;
 
-import com.iflytek.common.constant.AutherServerConstant;
-import com.iflytek.common.model.vo.memeber.MemberVO;
-import com.iflytek.common.model.vo.memeber.UserLoginVO;
-import com.iflytek.common.utils.*;
-import com.iflytek.gulimall.autherserver.vo.RegisterVO;
-import com.iflytek.gulimall.autherserver.feign.MemberService;
-import com.iflytek.gulimall.autherserver.feign.ThirdPartyService;
+import com.iflytek.gulimall.common.constant.AutherServerConstant;
+
+import com.iflytek.gulimall.common.feign.MemberServiceAPI;
+import com.iflytek.gulimall.common.feign.ThirdPartyServiceAPI;
+import com.iflytek.gulimall.common.feign.vo.MemberVO;
+import com.iflytek.gulimall.common.feign.vo.RegisterVO;
+import com.iflytek.gulimall.common.feign.vo.UserLoginVO;
+
+import com.iflytek.gulimall.common.utils.HttpUtils;
+import com.iflytek.gulimall.common.utils.ResultBody;
+import com.iflytek.gulimall.common.utils.ValidationUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
@@ -27,18 +31,18 @@ import java.net.URLEncoder;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
-import static com.iflytek.common.constant.AutherServerConstant.*;
+import static com.iflytek.gulimall.common.constant.AutherServerConstant.*;
 
 
 @Controller
 @Slf4j
 public class LoginController {
     @Autowired
-    private ThirdPartyService thirdPartyService;
+    private ThirdPartyServiceAPI thirdPartyServiceAPI;
     @Autowired
     private StringRedisTemplate redisTemplate;
     @Autowired
-    private MemberService memberService;
+    private MemberServiceAPI memberServiceAPI;
     @Autowired
     private RedissonClient redissonClient;
 
@@ -83,7 +87,7 @@ public class LoginController {
                 code,
                 20,
                 TimeUnit.MINUTES);
-        ResultBody resultBody = thirdPartyService.sendMsg(phone, code);
+        ResultBody resultBody = thirdPartyServiceAPI.sendMsg(phone, code);
         return resultBody;
     }
 
@@ -117,7 +121,7 @@ public class LoginController {
         String redisCode = redisTemplate.opsForValue().get(key);
         if (!StringUtils.isEmpty(redisCode) && registerVO.getCode().equals(redisCode)) {
             //redisTemplate.delete(key);
-            ResultBody resultBody = memberService.memberRegister(registerVO);
+            ResultBody resultBody = memberServiceAPI.memberRegister(registerVO);
             if (0 == resultBody.getCode()) {
                 return "redirect:" + URL_LOGIN;
             } else {
@@ -231,7 +235,7 @@ public class LoginController {
             return redirectLogin;
         }
 
-        ResultBody<MemberVO> memberVOResultBody = memberService.memberLogin(userLoginVO);
+        ResultBody<MemberVO> memberVOResultBody = memberServiceAPI.memberLogin(userLoginVO);
         if (memberVOResultBody.getCode() == 0) {
             MemberVO memberVO = memberVOResultBody.getData();
             session.setAttribute(LOGIN_USER, memberVO);

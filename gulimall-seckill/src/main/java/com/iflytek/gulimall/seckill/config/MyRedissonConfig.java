@@ -20,7 +20,7 @@ public class MyRedissonConfig {
     public RedissonClient redissonClient() throws IOException {
         //1、创建配置
         Config config = new Config();
-        config.useSingleServer().setAddress("redis://172.31.197.22:16379");
+        config.useSingleServer().setAddress("redis://192.168.56.10:6379").setDatabase(0).setPassword("root");
 
         //2、根据Config创建出RedissonClient实例
         //Redis url should start with redis:// or rediss://

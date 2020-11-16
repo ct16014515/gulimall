@@ -1,20 +1,26 @@
 package com.iflytek.gulimall.product.app;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
-import com.iflytek.common.model.vo.order.OrderItemVO;
-import com.iflytek.common.model.vo.product.SkuInfoPriceVO;
-import com.iflytek.common.utils.ResultBody;
+import com.iflytek.gulimall.common.feign.ProductServiceAPI;
+import com.iflytek.gulimall.common.feign.vo.OrderItemVO;
+import com.iflytek.gulimall.common.feign.vo.SkuInfoPriceVO;
+import com.iflytek.gulimall.common.feign.vo.SkuInfoVO;
+import com.iflytek.gulimall.common.utils.ResultBody;
+
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import com.iflytek.gulimall.product.entity.SkuInfoEntity;
 import com.iflytek.gulimall.product.service.SkuInfoService;
-import com.iflytek.common.utils.PageUtils;
-import com.iflytek.common.utils.R;
+import com.iflytek.gulimall.common.utils.PageUtils;
+import com.iflytek.gulimall.common.utils.R;
 
 
 /**
@@ -26,7 +32,7 @@ import com.iflytek.common.utils.R;
  */
 @RestController
 @RequestMapping("product/skuinfo")
-public class SkuInfoController {
+public class SkuInfoController implements ProductServiceAPI {
     @Autowired
     private SkuInfoService skuInfoService;
 
@@ -37,9 +43,22 @@ public class SkuInfoController {
     // @RequiresPermissions("product:skuinfo:list")
     public R list(@RequestParam Map<String, Object> params) {
         PageUtils page = skuInfoService.queryPage(params);
-
         return R.ok().put("page", page);
     }
+
+
+    @PostMapping("/list")
+    public ResultBody<List<SkuInfoVO>> list(@RequestBody List<Long> skuIds) {
+        List<SkuInfoVO> collect = skuInfoService.listByIds(skuIds).stream().map(
+                item -> {
+                    SkuInfoVO skuInfoVO = new SkuInfoVO();
+                    BeanUtils.copyProperties(item, skuInfoVO);
+                    return skuInfoVO;
+                }
+        ).collect(Collectors.toList());
+        return new ResultBody<>(collect);
+    }
+
 
 
     /**
@@ -49,7 +68,7 @@ public class SkuInfoController {
     // @RequiresPermissions("product:skuinfo:info")
     public ResultBody info(@PathVariable("skuId") Long skuId) {
         SkuInfoEntity skuInfo = skuInfoService.getById(skuId);
-        return new ResultBody(skuInfo);
+        return new ResultBody<>(skuInfo);
     }
 
     /**
@@ -105,11 +124,10 @@ public class SkuInfoController {
     }
 
     @PostMapping("/getOrderItemsBySkuIds")
-    List<OrderItemVO> getOrderItemsBySkuIds(@RequestBody List<Long> skuIds) {
+    public List<OrderItemVO> getOrderItemsBySkuIds(@RequestBody List<Long> skuIds) {
         List<OrderItemVO> orderItemVOS = skuInfoService.getOrderItemsBySkuIds(skuIds);
-        return  orderItemVOS;
+        return orderItemVOS;
     }
-
 
 
 }

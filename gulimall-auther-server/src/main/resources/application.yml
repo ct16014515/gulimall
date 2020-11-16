@@ -1,11 +1,11 @@
 spring:
   application:
     name: gulimall-auther-server
-  redis:
-    database: 0
-    port: 6379
-    host: 192.168.56.10
-    password: root
+  cloud:
+    sentinel:
+      transport:
+        port: 8720
+        dashboard: 192.168.56.10:8090
   session:
     store-type: redis
 feign:
@@ -16,6 +16,19 @@ server:
   servlet:
     session:
       timeout: 30m
+auth2:
+  weibo:
+    client_id: 833884090
+    client_secret: 591a1eb2d83e3f0056e3356ed9b8afd4
+    grant_type: authorization_code
+    redirect_uri: http://auth.gulimall.com/auth2/weibo/login/success
+    request_url: https://api.weibo.com/oauth2/access_token
+#暴露所有端点
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
 
 
 

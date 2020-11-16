@@ -13,7 +13,7 @@ import lombok.Data;
  * 
  * @author rclin
  * @email rclin@iflytek.com
- * @date 2020-06-07 11:02:59
+ * @date 2020-10-19 16:40:01
  */
 @Data
 @TableName("sms_seckill_sku_relation")
@@ -44,11 +44,11 @@ public class SeckillSkuRelationEntity implements Serializable {
 	/**
 	 * 秒杀总量
 	 */
-	private BigDecimal seckillCount;
+	private int seckillCount;
 	/**
 	 * 每人限购数量
 	 */
-	private BigDecimal seckillLimit;
+	private int seckillLimit;
 	/**
 	 * 排序
 	 */

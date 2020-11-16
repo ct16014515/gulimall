@@ -1,0 +1,39 @@
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <title>支付</title>
+</head>
+<body>
+<div id="myQrcode" th:text="${codeUrl}"></div>
+<div id="orderSn" hidden th:text="${orderSn}"></div>
+<div id="returnUrl" hidden th:text="${returnUrl}"></div>
+
+<script src="https://cdn.bootcss.com/jquery/1.5.1/jquery.min.js"></script>
+<script src="https://cdn.bootcss.com/jquery.qrcode/1.0/jquery.qrcode.min.js"></script>
+<script type="text/javascript" th:inline="javascript">
+    jQuery('#myQrcode').qrcode({
+        text: [[${codeUrl}]]
+    });
+
+    $(function () {
+        //定时器
+        setInterval(function () {
+            console.log('开始查询支付状态...');
+            var orderSn = [[${orderSn}]]
+            $.ajax({
+                'url': `order/order/getOrderEntityByOrderSn/${orderSn}`,
+                success: function (result) {
+                    if (result != null && result.code === 0 && result.data.status === 1) {
+                        location.href = [[${returnUrl}]]
+                    }
+                },
+                error: function (result) {
+                    alert(result)
+                }
+            })
+        }, 10000)
+    });
+
+</script>
+</body>
+</html>

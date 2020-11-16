@@ -1,6 +1,6 @@
 package com.iflytek.gulimall.search.vo;
 
-import com.iflytek.common.model.es.SkuEsModel;
+import com.iflytek.gulimall.common.model.es.SkuEsModel;
 import lombok.Data;
 import lombok.ToString;
 

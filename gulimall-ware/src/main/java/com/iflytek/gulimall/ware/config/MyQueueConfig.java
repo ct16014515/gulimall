@@ -10,7 +10,8 @@ import org.springframework.context.annotation.Configuration;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.iflytek.common.constant.WareConstant.*;
+import static com.iflytek.gulimall.common.constant.MqConstant.*;
+import static com.iflytek.gulimall.common.constant.WareConstant.*;
 
 /**
  * 场景1、成功下订单后，锁定库存，当订单1分钟没有支付时，需要使用延时队列来释放库存。
@@ -34,7 +35,7 @@ public class MyQueueConfig {
         Map<String, Object> argument = new HashMap<>();
         argument.put("x-dead-letter-exchange", MQ_WARE_EXCHANGE);
         argument.put("x-dead-letter-routing-key", MQ_STOCK_RELEASE_ROUTINGKEY);
-        argument.put("x-message-ttl", 2 * 60 * 1000);
+        argument.put("x-message-ttl", 3 * 60 * 1000);
         Queue queue = new Queue(MQ_STOCK_DELAY_QUEUE,
                 true,
                 false,

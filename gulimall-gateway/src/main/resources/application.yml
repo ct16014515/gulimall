@@ -9,11 +9,24 @@ spring:
             - Path=/api/product/**
           filters:
             - RewritePath=/api/(?<segment>/?.*), /$\{segment}
-        #配置第三方服务路由  http://127.0.0.1:88/api/thirdparty/oss/policy
+         #配置第三方服务路由  http://127.0.0.1:88/api/thirdparty/oss/policy
         - id: gulimall_third_party
           uri: lb://gulimall-third-party
           predicates:
             - Path=/api/thirdparty/**
+          filters:
+              - RewritePath=/api/(?<segment>/?.*), /$\{segment}
+            #配置优惠券服务
+        - id: coupon_route
+          uri: lb://gulimall-coupon
+          predicates:
+              - Path=/api/coupon/**
+          filters:
+              - RewritePath=/api/(?<segment>/?.*), /$\{segment}
+        - id: coupon_route
+          uri: lb://gulimall-order
+          predicates:
+              - Path=/api/order/**
           filters:
               - RewritePath=/api/(?<segment>/?.*), /$\{segment}
         #配置后台路由
@@ -24,6 +37,7 @@ spring:
           filters:  #- RewritePath=/red(?<segment>/?.*), $\{segment} 会将red舍去
             - RewritePath=/api/(?<segment>/?.*), /renren-fast/$\{segment}  #重写路径逗号前面的是之前的地址,后面是需要转到的地址
          # 配置gulimall-product的web页面转发 由于gulimall.com的api接口也会匹配此路径 所以需要发放最后
+
         - id: gulimall_productweb
           uri: lb://gulimall-product
           predicates:
@@ -44,9 +58,25 @@ spring:
           uri: lb://gulimall-order
           predicates:
              - Host=order.gulimall.com
-      x-forwarded:
-        host-enabled: true  #网关转发携带域名
+        - id: gulimall-member
+          uri: lb://gulimall-member
+          predicates:
+              - Host=member.gulimall.com
+        - id: gulimall-seckill
+          uri: lb://gulimall-seckill
+          predicates:
+            - Host=seckill.gulimall.com
+    sentinel:
+      transport:
+        port: 8788
+        dashboard: 192.168.56.10:8090
   application:
     name: gulimall-gateway
+
 server:
   port: 88
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'

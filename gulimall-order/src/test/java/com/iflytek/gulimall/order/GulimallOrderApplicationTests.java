@@ -1,5 +1,6 @@
 package com.iflytek.gulimall.order;
 
+import com.iflytek.gulimall.order.config.AlipayTemplate;
 import com.iflytek.gulimall.order.entity.OrderEntity;
 import org.junit.jupiter.api.Test;
 import org.springframework.amqp.core.AmqpAdmin;
@@ -67,6 +68,18 @@ class GulimallOrderApplicationTests {
                 order);
         System.out.println("消息发送成功");
     }
+    @Autowired
+    AlipayTemplate alipayTemplate;
 
+    @Test
+    public void colseOrder(){
+        alipayTemplate.closeOrder("1315586711895453697");
+    }
+
+
+    @Test
+    public void queryOrder(){
+        alipayTemplate.queryOrder("1315585490858061826");
+    }
 
 }

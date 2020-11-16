@@ -1,14 +1,14 @@
 package com.iflytek.gulimall.search.service;
 
 import com.alibaba.fastjson.JSONObject;
-import com.iflytek.common.model.es.SkuEsModel;
+
+import com.iflytek.gulimall.common.feign.vo.SkuEsModel;
 import com.iflytek.gulimall.search.config.GulimallElasticSearchConfig;
 import com.iflytek.gulimall.search.constant.EsConstant;
 import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.action.bulk.BulkRequest;
 import org.elasticsearch.action.bulk.BulkResponse;
 import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.springframework.beans.factory.annotation.Autowired;

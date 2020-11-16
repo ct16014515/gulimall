@@ -1,23 +1,25 @@
 package com.iflytek.gulimall.ware.service.impl;
 
 
-import com.iflytek.common.exception.GulimallExceptinCodeEnum;
-import com.iflytek.common.model.enume.OrderStatusEnum;
-import com.iflytek.common.model.vo.order.OrderEntityVO;
-import com.iflytek.common.model.vo.product.SkuOrderItem;
-import com.iflytek.common.model.vo.product.WareHasStockVO;
+import com.iflytek.gulimall.common.exception.GulimallExceptinCodeEnum;
+import com.iflytek.gulimall.common.feign.MqServiceAPI;
+import com.iflytek.gulimall.common.feign.OrderServiceAPI;
+import com.iflytek.gulimall.common.feign.vo.*;
+import com.iflytek.gulimall.common.model.enume.OrderStatusEnum;
+import com.iflytek.gulimall.common.model.mq.to.OrderEntityPayedTO;
+import com.iflytek.gulimall.common.model.mq.to.OrderEntityReleaseTO;
+import com.iflytek.gulimall.common.model.mq.to.WareStockDelayTO;
 
-import com.iflytek.common.model.vo.product.WareSkuLockVO;
-import com.iflytek.common.utils.ResultBody;
+import com.iflytek.gulimall.common.utils.ResultBody;
+
 import com.iflytek.gulimall.ware.dao.WareOrderTaskDao;
 import com.iflytek.gulimall.ware.dao.WareOrderTaskDetailDao;
 import com.iflytek.gulimall.ware.entity.WareOrderTaskDetailEntity;
 import com.iflytek.gulimall.ware.entity.WareOrderTaskEntity;
-import com.iflytek.gulimall.ware.feign.OrderService;
+
+import com.iflytek.gulimall.ware.service.WareOrderTaskDetailService;
 import com.iflytek.gulimall.ware.vo.WareSkuVO;
-import com.iflytek.gulimall.ware.vo.WareStockDelayVO;
-import org.checkerframework.checker.units.qual.A;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,19 +29,21 @@ import java.util.stream.Collectors;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.iflytek.common.utils.PageUtils;
-import com.iflytek.common.utils.Query;
+import com.iflytek.gulimall.common.utils.PageUtils;
+import com.iflytek.gulimall.common.utils.Query;
 
 import com.iflytek.gulimall.ware.dao.WareSkuDao;
 import com.iflytek.gulimall.ware.entity.WareSkuEntity;
 import com.iflytek.gulimall.ware.service.WareSkuService;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.iflytek.common.constant.WareConstant.MQ_STOCK_LOCKED_ROUTINGKEY;
-import static com.iflytek.common.constant.WareConstant.MQ_WARE_EXCHANGE;
+import static com.iflytek.gulimall.common.constant.MqConstant.MQ_STOCK_LOCKED_ROUTINGKEY;
+import static com.iflytek.gulimall.common.constant.MqConstant.MQ_WARE_EXCHANGE;
+
 
 
 @Service("wareSkuService")
+@Slf4j
 public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> implements WareSkuService {
 
 
@@ -51,9 +55,11 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
     @Autowired
     private WareOrderTaskDetailDao wareOrderTaskDetailDao;
     @Autowired
-    private RabbitTemplate rabbitTemplate;
+    private OrderServiceAPI orderServiceAPI;
     @Autowired
-    private OrderService orderService;
+    MqServiceAPI mqServiceAPI;
+    @Autowired
+    private WareOrderTaskDetailService wareOrderTaskDetailService;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -140,29 +146,36 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
                 return new ResultBody(GulimallExceptinCodeEnum.WARE_STOCK_ERROR);
             }
         }
-        //发送延时队列,对象需要包含wms_ware_order_task_detail主键的id集合,orderSn,
-        //当消费者拿到这个消息时可以根据orderSn查询订单状态来修改库存状态
-        WareStockDelayVO wareStockDelayVO = new WareStockDelayVO();
-        wareStockDelayVO.setWareOrderTaskDetailIds(wareOrderTaskDetailIds);
-        wareStockDelayVO.setOrderSn(wareSkuLockVO.getOrderSn());
-        rabbitTemplate.convertAndSend(MQ_WARE_EXCHANGE, MQ_STOCK_LOCKED_ROUTINGKEY, wareStockDelayVO);
+        /**
+         * 库存自动解锁功能:当用户超时未支付,或者订单服务出现异常,库存需要自动解锁,即将锁定的库存数量重新减去
+         * 发送延时队列,对象需要包含wms_ware_order_task_detail主键的id集合,orderSn,
+         * 当消费者拿到这个消息时可以根据orderSn查询订单状态来修改库存状态
+         */
+        WareStockDelayTO wareStockDelayTO = new WareStockDelayTO();
+        wareStockDelayTO.setWareOrderTaskDetailIds(wareOrderTaskDetailIds);
+        wareStockDelayTO.setOrderSn(wareSkuLockVO.getOrderSn());
+        SendMessageRequest messageRequest = SendMessageRequest.builder().className(wareStockDelayTO.getClass().getName()).
+                routingKey(MQ_STOCK_LOCKED_ROUTINGKEY).object(wareStockDelayTO).exchange(MQ_WARE_EXCHANGE).build();
+        mqServiceAPI.sendMessage(messageRequest);
+        // rabbitTemplate.convertAndSend(MQ_WARE_EXCHANGE, MQ_STOCK_LOCKED_ROUTINGKEY, wareStockDelayTO);
         return new ResultBody();
     }
 
     @Override
     @Transactional
-    public void stockRelease(WareStockDelayVO wareStockDelayVO) {
+    public void stockRelease(WareStockDelayTO wareStockDelayTO) {
         //根据订单查询库存状态
-        String orderSn = wareStockDelayVO.getOrderSn();
-        ResultBody<OrderEntityVO> resultBody = orderService.getOrderEntityByOrderSn(orderSn);  //如果远程调用失败,则重新归还队列
+        String orderSn = wareStockDelayTO.getOrderSn();
+        ResultBody<OrderEntityVO> resultBody = orderServiceAPI.getOrderEntityByOrderSn(orderSn);  //如果远程调用失败,则重新归还队列
         if (resultBody.getCode() == 0) {
             OrderEntityVO orderEntityVO = resultBody.getData();
             if (orderEntityVO == null || orderEntityVO.getStatus().equals(OrderStatusEnum.CANCLED.getCode())) {
                 //订单创建失败,或者用户取消需要回滚,需要将库存加上去
-                List<Long> wareOrderTaskDetailIds = wareStockDelayVO.getWareOrderTaskDetailIds();
+                List<Long> wareOrderTaskDetailIds = wareStockDelayTO.getWareOrderTaskDetailIds();
                 wareOrderTaskDetailIds.stream().forEach(id -> {
                     WareOrderTaskDetailEntity wareOrderTaskDetailEntity = wareOrderTaskDetailDao.selectOne(new QueryWrapper<WareOrderTaskDetailEntity>().eq("id", id).eq("lock_status", 1));
                     if (wareOrderTaskDetailEntity != null) {
+                        log.info("*********库存服务的自动解锁库存消息,订单号:{}***********", wareStockDelayTO.getOrderSn());
                         //修改库存工作单
                         WareOrderTaskDetailEntity wareOrderTaskDetail = new WareOrderTaskDetailEntity();
                         wareOrderTaskDetail.setId(wareOrderTaskDetailEntity.getId());
@@ -195,11 +208,11 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
 
     @Override
     @Transactional
-    public void stockRelease(OrderEntityVO orderEntityVO) {
-        if (OrderStatusEnum.CREATE_NEW.getCode().equals(orderEntityVO.getStatus())) {
-            String orderSn = orderEntityVO.getOrderSn();
+    public void stockRelease(OrderEntityReleaseTO orderEntityReleaseTO) {
+        if (OrderStatusEnum.CREATE_NEW.getCode().equals(orderEntityReleaseTO.getStatus())) {
+            String orderSn = orderEntityReleaseTO.getOrderSn();
             //从订单服务再查一次订单的状态
-            ResultBody<OrderEntityVO> resultBody = orderService.getOrderEntityByOrderSn(orderSn);
+            ResultBody<OrderEntityVO> resultBody = orderServiceAPI.getOrderEntityByOrderSn(orderSn);
             if (resultBody.getCode() == 0) {
                 OrderEntityVO data = resultBody.getData();
                 if (OrderStatusEnum.CANCLED.getCode().equals(data.getStatus())) {
@@ -216,6 +229,7 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
                                 selectList(new QueryWrapper<WareOrderTaskDetailEntity>().eq("task_id", taskId).
                                         eq("lock_status", 1));
                         if (wareOrderTaskDetailEntities != null && wareOrderTaskDetailEntities.size() > 0) {
+                            log.info("*********订单超时未支付,自动解锁库存,订单号:{}************", orderEntityReleaseTO.getOrderSn());
                             wareOrderTaskDetailEntities.stream().forEach(wareOrderTaskDetailEntity -> {
                                 WareOrderTaskDetailEntity updateWareOrderTaskDetailEntity = new WareOrderTaskDetailEntity();
                                 updateWareOrderTaskDetailEntity.setId(wareOrderTaskDetailEntity.getId());
@@ -227,7 +241,7 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
                                 WareSkuEntity wareSkuEntity = wareSkuDao.selectById(wareSkuId);
                                 WareSkuEntity updateWareSkuEntity = new WareSkuEntity();
                                 updateWareSkuEntity.setId(wareSkuId);
-                                updateWareSkuEntity.setStockLocked(wareSkuEntity.getStockLocked()-skuNum);
+                                updateWareSkuEntity.setStockLocked(wareSkuEntity.getStockLocked() - skuNum);
                                 wareSkuDao.updateById(updateWareSkuEntity);
                             });
                         }
@@ -239,5 +253,60 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
         }
 
 
+    }
+
+    /**
+     * 减去库存
+     *
+     * @param orderEntityPayedTO
+     */
+    @Override
+    @Transactional
+    public void stockReduce(OrderEntityPayedTO orderEntityPayedTO) {
+        if (OrderStatusEnum.PAYED.getCode().equals(orderEntityPayedTO.getStatus())) {
+            String orderSn = orderEntityPayedTO.getOrderSn();
+            ResultBody<OrderEntityVO> resultBody = orderServiceAPI.getOrderEntityByOrderSn(orderSn);
+            if (resultBody.getCode() == 0) {
+                OrderEntityVO entityVO = resultBody.getData();
+                if (OrderStatusEnum.PAYED.getCode().equals(entityVO.getStatus())) {
+                    WareOrderTaskEntity wareOrderTaskEntity = wareOrderTaskDao.selectOne(new QueryWrapper<WareOrderTaskEntity>().
+                            eq("order_sn", orderSn).eq("task_status", 1).last("limit 1"));
+                    if (wareOrderTaskEntity != null) {
+                        WareOrderTaskEntity updateWareOrderTaskEntity = new WareOrderTaskEntity();
+                        Long taskId = wareOrderTaskEntity.getId();
+                        updateWareOrderTaskEntity.setId(taskId);
+                        updateWareOrderTaskEntity.setTaskStatus(3);
+                        wareOrderTaskDao.updateById(updateWareOrderTaskEntity);
+                        //查询工作单详情列表
+                        List<WareOrderTaskDetailEntity> wareOrderTaskDetailEntities = wareOrderTaskDetailDao.
+                                selectList(new QueryWrapper<WareOrderTaskDetailEntity>().eq("task_id", taskId).
+                                        eq("lock_status", 1));
+                        if (wareOrderTaskDetailEntities != null && wareOrderTaskDetailEntities.size() > 0) {
+                            log.info("*********订单已支付,减去库存,订单号:{}************", orderEntityPayedTO.getOrderSn());
+                            List<WareOrderTaskDetailEntity> taskDetailUpdateList = wareOrderTaskDetailEntities.stream().map(wareOrderTaskDetailEntity -> {
+                                WareOrderTaskDetailEntity updateWareOrderTaskDetailEntity = new WareOrderTaskDetailEntity();
+                                updateWareOrderTaskDetailEntity.setId(wareOrderTaskDetailEntity.getId());
+                                updateWareOrderTaskDetailEntity.setLockStatus(3);
+                                return updateWareOrderTaskDetailEntity;
+                            }).collect(Collectors.toList());
+                            wareOrderTaskDetailService.updateBatchById(taskDetailUpdateList);
+                            List<WareSkuEntity> wareSkuList = wareOrderTaskDetailEntities.stream().map(wareOrderTaskDetailEntity -> {
+                                Long wareSkuId = wareOrderTaskDetailEntity.getWareSkuId();
+                                Integer skuNum = wareOrderTaskDetailEntity.getSkuNum();
+                                WareSkuEntity wareSkuEntity = wareSkuDao.selectById(wareSkuId);
+                                //锁定的库存需要减去,库存数也要减去
+                                WareSkuEntity updateWareSkuEntity = new WareSkuEntity();
+                                updateWareSkuEntity.setId(wareSkuId);
+                                updateWareSkuEntity.setStockLocked(wareSkuEntity.getStockLocked() - skuNum);
+                                updateWareSkuEntity.setStock(wareSkuEntity.getStock() - skuNum);
+                                return updateWareSkuEntity;
+                            }).collect(Collectors.toList());
+                            //真正减库存
+                            this.updateBatchById(wareSkuList);
+                        }
+                    }
+                }
+            }
+        }
     }
 }

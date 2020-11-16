@@ -1,7 +1,8 @@
 package com.iflytek.gulimall.order.web;
 
-import com.iflytek.common.exception.RRException;
-import com.iflytek.common.model.vo.memeber.MemberVO;
+import com.iflytek.gulimall.common.exception.RRException;
+
+import com.iflytek.gulimall.common.feign.vo.MemberVO;
 import com.iflytek.gulimall.order.entity.OrderEntity;
 import com.iflytek.gulimall.order.interceptor.LoginInterceptor;
 import com.iflytek.gulimall.order.service.OrderService;
@@ -43,7 +44,7 @@ public class OrderWebController {
         long begin = System.currentTimeMillis();
         try {
             OrderSubmitResposeVO resposeVO = orderService.submitOrder(orderSubmitVO);
-            redirectAttributes.addAttribute("orderId", resposeVO.getOrderEntity().getId());
+            redirectAttributes.addAttribute("orderSn", resposeVO.getOrderEntity().getOrderSn());
             System.out.println("耗时:" + (System.currentTimeMillis() - begin) + "毫秒");
             return "redirect:http://order.gulimall.com/payDetail.html";
         } catch (RRException e) {
@@ -59,9 +60,9 @@ public class OrderWebController {
 
     //在订单支付页面试可以刷新页面的,在提交订单之后,重定向到订单支付页
     @GetMapping("/payDetail.html")
-    public String payDetailHtml(@RequestParam("orderId") Long orderId, Model model) {
+    public String payDetailHtml(@RequestParam("orderSn") String  orderSn, Model model) {
         MemberVO memberVO = LoginInterceptor.toThreadLocal.get();
-        OrderEntity orderEntity = orderService.getOrderEntityByOrderIdAndUserId(orderId, memberVO.getUserId());
+        OrderEntity orderEntity = orderService.getOrderEntityByOrderSnAndUserId(orderSn, memberVO.getUserId());
         model.addAttribute("orderEntity", orderEntity);
         return "pay";
     }

@@ -1,6 +1,6 @@
 package com.iflytek.gulimall.cart.web;
 
-import com.iflytek.common.model.vo.cart.CartItemVO;
+import com.iflytek.gulimall.common.feign.vo.CartItemVO;
 import com.iflytek.gulimall.cart.service.CartService;
 import com.iflytek.gulimall.cart.vo.CartVO;
 import org.springframework.beans.factory.annotation.Autowired;

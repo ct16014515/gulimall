@@ -19,7 +19,7 @@ spring:
     publisher-confirm-type: correlated  # 开启发送端消息抵达Broker确认 使用correlated方式
     publisher-returns: true # 开启发送端消息抵达Queue确认 消息没有抵达队列会触发此回调
     template:
-      mandatory: true #只要消息抵达Queue失败，就会异步发送优先回调returnfirm
+      mandatory: true #只要消息抵达Queue失败，就会异步发送优先回调returnconfirm
     listener:
       simple:
         acknowledge-mode: manual  #消费端手动确认
@@ -29,16 +29,48 @@ spring:
     cache: false
   application:
     name: gulimall-order
+  cloud:
+    alibaba:
+      seata:
+        tx-service-group: my_test_tx_group
+    sentinel:
+      transport:
+        port: 8725
+        dashboard: 192.168.56.10:8090
 mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
   mapper-locations: classpath:/mapper/**/*.xml
   global-config:
     db-config:
       id-type: auto
-feign:
-    hystrix:
-      enabled: true
 server:
-  port: 0
+  port: 13000
   servlet:
     session:
       timeout: 30m
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+#支付宝支付
+alipay:
+  app_id: 2016101100658026
+  merchant_private_key: MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQCSeBxO0nBZfzmWqJmMFMDn3G46lKt8DBb0/CUNotsB2EUTy2ARZcr/jYHQCWET/xcjUPHNjQfWHDp+rFfLVUK9E8HtNcOxgfJT+aYb0/7ixtl8PTpEkO3Ul2CnDdznwdJwFw5fU7lVIjBIb0J51aNTIghondZ/ZqJ6HyfrKfQK31k2qT9u4MoSSk/sPOvQiMRAvsF8PejWJZ7ID8XBqhrWbXRVwQ0buI/E2Tj/jvl5LwRlOcTwWQzTY1w7mNMuAD+VqU/roVTngkNqLpbD2Vqq/+2rZKzoiWlLICwWnvrDU9MhVyKg0nyWxkW7QpSL5kYcvEAWWeA141DdNPzfvYM7AgMBAAECggEAMR3YGFKXXFu+mxgUzZXUDqyrxjc+vk1rkWHQpx76pEa6+2VS5OKmzUXNx06t4D/FqZEmVRC7FQDIWNxAYK5JwBAVEw/ZfPgfpCtumZxgt/mIyxHZLU8Qgh71SW/rqUgk4nPI3Qy9dKAPYur0dti+eU1LVpG/cV+gkqVKBKE/9jjnM1+P93oED18/83YaoFk0670+vVEKrhEzv3owLYXxRAMs3vD2Tug6ZD+yDodNJbNF8QpuFen07EOuhsVbCZ/4EfKDIA0WbxCgjcbWgreTSIZxnDTFgdcZ0bCl1HDvG3cg1Y4BW18d2ySMTVP9Y4RcGK5b1YGLthi7hO5N8431EQKBgQDWBEPcKkFAkNCZqS6hXmFu8R9O82QoKfYbdN2M+YasMnhHf+z8xz7trObJIByuvJtITBH/fFhEusOEnNwe7uU5taTolwHU8uYktlP6yu/25PuIl4tKOCEPxE9UjjvQaraOeSCLqN9hs6MBvcC6MILDQJakxJqz9f55rfNdXjMXYwKBgQCvM6sioT2u4aRmbRs+MrG/7kYn313qwexTi+D0Nc7axj7yW7T+hVieI54q+xKXX1NbgUEJF5s4StiJxIDJRbjLWpCR11crGxKXDPL2iIOO5S4hRoQQMtpAzJjFfPaAXbC6uvsdAQG1q4jY6xZmAWUfiEijuDD3BRk6gQT+aIhISQKBgQCgUT+YPFr3B8QLZ22T2gR4u80tMivT3mMKfEe+Y+kbMw9g2BZp4MNl/YBAJ3r09joINVvCG55vlcwCmhJWZbR2v3gR95SatX3rAF32X3DUbQFzd7oS1esGSZL3jziFTnsETP4xQEZdhNhV5JPrpY0+wDJYqSIOLvb6pXDJf1gcawKBgQCOdtpDB5Ar44mWTEQp2HkXU76yb3xkB5qO+SBMFHEHDstisdXEXVQJC3dzBcRBWJ9kuf7TUOHD7YCUzjfW8p3opdUG8m8MOzBrqXjrpWgsywkuv7NlpKQ6quPTOuEK0qSBwses9wOX4Use8FK/UYUUFfLTRlRymS/BleYkpYWkGQKBgQDDN0zDQ4Ib2qR4xX+FEQJhScHpKvQtRo1etU8JLZ6PPAfRDkOV2JhVi9MjX8xzEPSP0nPkjhcR22PRln/sCLwIMbxR9OX/YU5Vj7tL1hJTobBumkEpsaoMgMZKKKflAc4Q7vbN6ZX1PS7zYKKWD/r8+AERZ5z+hx8TTTjkeFdIzQ==
+  alipay_public_key: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAhX1msh7BPQLu+Ph5qvxJVERfzSTLlyUzmZ+e8OEu3+hb3ifho17q+/yciDjbD+OvRstgNiHLG2Dm2jB02aolSdy/RXsalJq/1gTg+l8WaMxS6TLb3ZP0YwvlVuzkmTILVRKLaTi3O8ZVireqqmGDd1ne11ULD2QXtvI1dOuPxFFsHMxXLHaXmHnw177p4yiSn9xAezHqd0+XC8NVMV7YKFd1qwWCUsAsrUEBFkiT5vTlTZT00r9WpcsQV8/Juj3UnIJ6C3OKz3VpPdSO6cp/8tzYq5l8pT28YUOI3hm2R2fu3bzRsO8767BaZ18ClIItMu0Jbm0pypJRtrMqQwnPAwIDAQAB
+  notify_url: http://t3fcjk.natappfree.cc/order/aliPayNotifyUrl
+  return_url: http://member.gulimall.com/myOrderList.html
+  sign_type: RSA2
+  charset: utf-8
+  gatewayUrl: https://openapi.alipaydev.com/gateway.do
+#微信支付
+wx:
+  appId: wxd898fcb01713c658
+  mchId: 1483469312
+  mchKey: 098F6BCD4621D373CADE4E832627B4F6
+  notifyUrl: http://t3fcjk.natappfree.cc/order/wxPayNotifyUrl
+  returnUrl: http://member.gulimall.com/myOrderList.html
+
+order:
+  timeOut: 2 #订单超时时间,也是支付宝订单超时时间 单位分钟

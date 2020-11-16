@@ -1,19 +1,15 @@
 package com.iflytek.gulimall.product.entity;
 
 import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableLogic;
 import com.baomidou.mybatisplus.annotation.TableName;
 
 import java.io.Serializable;
-import java.util.Date;
 
-import com.iflytek.common.vliadte.AddGroup;
-import com.iflytek.common.vliadte.UpdateGroup;
+import com.iflytek.gulimall.common.vliadte.AddGroup;
+import com.iflytek.gulimall.common.vliadte.UpdateGroup;
 import lombok.Data;
 import org.hibernate.validator.constraints.URL;
-import org.springframework.lang.NonNull;
 
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Null;
 

@@ -9,6 +9,30 @@ spring:
       max-active: 100
   application:
     name: gulimall-ware
+  task:
+    execution:
+      pool:
+        core-size: 20
+        max-size: 50
+  cloud:
+    alibaba:
+      seata:
+        tx-service-group: my_test_tx_group
+    sentinel:
+      transport:
+        port: 8729
+        dashboard: 192.168.56.10:8090
+  rabbitmq:
+    host: 192.168.56.10
+    virtual-host: /
+    port: 5672
+    publisher-confirm-type: correlated  # 开启发送端消息抵达Broker确认 使用correlated方式
+    publisher-returns: true # 开启发送端消息抵达Queue确认 消息没有抵达队列会触发此回调
+    template:
+      mandatory: true #只要消息抵达Queue失败，就会异步发送优先回调returnfirm
+    listener:
+      simple:
+        acknowledge-mode: manual  #消费端手动确认
 mybatis-plus:
   mapper-locations: classpath:/mapper/**/*.xml
   global-config:
@@ -16,3 +40,8 @@ mybatis-plus:
       id-type: auto
 server:
   port: 11000
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'

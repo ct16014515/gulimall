@@ -5,15 +5,18 @@ import java.util.Arrays;
 import java.util.Map;
 
 
-import com.iflytek.common.model.vo.order.OrderEntityVO;
-import com.iflytek.common.utils.ResultBody;
+import com.iflytek.gulimall.common.exception.GulimallExceptinCodeEnum;
+import com.iflytek.gulimall.common.utils.ResultBody;
+import com.iflytek.gulimall.common.feign.OrderServiceAPI;
+import com.iflytek.gulimall.common.feign.vo.OrderEntityVO;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import com.iflytek.gulimall.order.entity.OrderEntity;
 import com.iflytek.gulimall.order.service.OrderService;
-import com.iflytek.common.utils.PageUtils;
-import com.iflytek.common.utils.R;
+import com.iflytek.gulimall.common.utils.PageUtils;
+import com.iflytek.gulimall.common.utils.R;
 
 
 /**
@@ -25,7 +28,7 @@ import com.iflytek.common.utils.R;
  */
 @RestController
 @RequestMapping("order/order")
-public class OrderController {
+public class OrderController implements OrderServiceAPI {
     @Autowired
     private OrderService orderService;
 
@@ -91,9 +94,28 @@ public class OrderController {
     }
 
     @GetMapping("/getOrderEntityByOrderSn/{orderSn}")
-    public ResultBody<OrderEntity> getOrderEntityByOrderSn(@PathVariable("orderSn") String orderSn) {
-        ResultBody<OrderEntity> resultBody=  orderService.getOrderEntityByOrderSn(orderSn);
-        return  resultBody;
+    public ResultBody<OrderEntityVO> getOrderEntityByOrderSn(@PathVariable("orderSn") String orderSn) {
+        OrderEntity orderEntity = orderService.getOrderEntityByOrderSn(orderSn);
+        if (orderEntity != null) {
+            OrderEntityVO orderEntityVO = new OrderEntityVO();
+            BeanUtils.copyProperties(orderEntity, orderEntityVO);
+            return new ResultBody<>(orderEntityVO);
+        }else {
+            return new ResultBody<>(GulimallExceptinCodeEnum.UNKNOWN_EXCEPTION);
+        }
+
+    }
+
+    /**
+     * 列表
+     *
+     * @return
+     */
+    @PostMapping("/orderWithOrderItemList")
+    // @RequiresPermissions("order:order:list")
+    public ResultBody<PageUtils> orderWithOrderItemList(@RequestBody Map<String, Object> params) {
+        PageUtils page = orderService.orderWithOrderItemList(params);
+        return new ResultBody(page);
     }
 
 

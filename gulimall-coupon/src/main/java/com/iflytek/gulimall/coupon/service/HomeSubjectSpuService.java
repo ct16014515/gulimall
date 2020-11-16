@@ -1,7 +1,7 @@
 package com.iflytek.gulimall.coupon.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.iflytek.common.utils.PageUtils;
+import com.iflytek.gulimall.common.utils.PageUtils;
 import com.iflytek.gulimall.coupon.entity.HomeSubjectSpuEntity;
 
 import java.util.Map;
@@ -11,7 +11,7 @@ import java.util.Map;
  *
  * @author rclin
  * @email rclin@iflytek.com
- * @date 2020-06-07 11:02:59
+ * @date 2020-10-19 16:40:01
  */
 public interface HomeSubjectSpuService extends IService<HomeSubjectSpuEntity> {
 

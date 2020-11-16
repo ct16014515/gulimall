@@ -6,10 +6,10 @@ import org.springframework.cloud.client.discovery.EnableDiscoveryClient;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {"com.iflytek.gulimall.autherserver","com.iflytek.gulimall.common.feign"})
 @EnableDiscoveryClient
-@EnableFeignClients//feign的客户端,远程调用使用
-@EnableRedisHttpSession//整合redis作为session存储
+@EnableFeignClients(basePackages = {"com.iflytek.gulimall.common.feign"})
+@EnableRedisHttpSession
 public class GulimallAutherServerApplication {
 
     public static void main(String[] args) {

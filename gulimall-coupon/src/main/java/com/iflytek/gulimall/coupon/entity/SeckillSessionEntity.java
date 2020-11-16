@@ -1,10 +1,15 @@
 package com.iflytek.gulimall.coupon.entity;
 
+import cn.hutool.core.date.DatePattern;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 
-import java.io.Serializable;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.iflytek.gulimall.common.base.Entity;
 import lombok.Data;
 
 /**
@@ -12,11 +17,11 @@ import lombok.Data;
  * 
  * @author rclin
  * @email rclin@iflytek.com
- * @date 2020-06-07 11:02:59
+ * @date 2020-10-19 16:40:01
  */
 @Data
 @TableName("sms_seckill_session")
-public class SeckillSessionEntity implements Serializable {
+public class SeckillSessionEntity extends Entity {
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -31,18 +36,21 @@ public class SeckillSessionEntity implements Serializable {
 	/**
 	 * 每日开始时间
 	 */
-	private Date startTime;
+    @JsonFormat(pattern = DatePattern.NORM_DATETIME_PATTERN)
+	private LocalDateTime startTime;
 	/**
 	 * 每日结束时间
 	 */
-	private Date endTime;
+    @JsonFormat(pattern = DatePattern.NORM_DATETIME_PATTERN)
+	private LocalDateTime endTime;
 	/**
 	 * 启用状态
 	 */
 	private Integer status;
-	/**
-	 * 创建时间
-	 */
-	private Date createTime;
+
+   //活动和商品关联表
+	@TableField(exist = false)
+	private List<SeckillSkuRelationEntity> skuRelationEntityList;
+
 
 }

@@ -2,17 +2,21 @@ package com.iflytek.gulimall.product.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
-import com.iflytek.common.exception.GulimallExceptinCodeEnum;
-import com.iflytek.common.exception.RRException;
-import com.iflytek.common.model.es.Attr;
-import com.iflytek.common.model.es.SkuEsModel;
-import com.iflytek.common.model.vo.product.WareHasStockVO;
+import com.iflytek.gulimall.common.exception.GulimallExceptinCodeEnum;
+import com.iflytek.gulimall.common.exception.RRException;
+import com.iflytek.gulimall.common.feign.SerachServiceAPI;
+import com.iflytek.gulimall.common.feign.WareServiceAPI;
+import com.iflytek.gulimall.common.feign.vo.SkuEsModel;
+import com.iflytek.gulimall.common.feign.vo.WareHasStockVO;
+import com.iflytek.gulimall.common.model.es.Attr;
 
-import com.iflytek.common.utils.ResultBody;
+
+
+import com.iflytek.gulimall.common.utils.ResultBody;
+
 import com.iflytek.gulimall.product.dao.*;
 import com.iflytek.gulimall.product.entity.*;
-import com.iflytek.gulimall.product.feign.SerachService;
-import com.iflytek.gulimall.product.feign.WareService;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +31,8 @@ import java.util.stream.Collectors;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.iflytek.common.utils.PageUtils;
-import com.iflytek.common.utils.Query;
+import com.iflytek.gulimall.common.utils.PageUtils;
+import com.iflytek.gulimall.common.utils.Query;
 
 import com.iflytek.gulimall.product.service.SpuInfoService;
 
@@ -41,13 +45,13 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
     @Autowired
     CategoryDao categoryDao;
     @Autowired
-    WareService wareService;
+    WareServiceAPI wareServiceAPI;
     @Autowired
     ProductAttrValueDao productAttrValueDao;
     @Autowired
     BrandDao brandDao;
     @Autowired
-    SerachService serachService;
+    SerachServiceAPI serachServiceAPI;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -77,7 +81,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
         try {
             TypeReference<List<WareHasStockVO>> typeReference = new TypeReference<List<WareHasStockVO>>() {
             };
-            List<WareHasStockVO> stockVos = wareService.hasStock(skuIdList).getData(typeReference);
+            List<WareHasStockVO> stockVos = wareServiceAPI.hasStock(skuIdList).getData(typeReference);
             stockVosMap = stockVos.stream().collect(Collectors.toMap(WareHasStockVO::getSkuId, item -> item.getHasStock()));
         } catch (Exception e) {
             log.info("库存服务查询异常:{}", e);
@@ -118,7 +122,7 @@ public class SpuInfoServiceImpl extends ServiceImpl<SpuInfoDao, SpuInfoEntity> i
             skuEsModel.setAttrs(attrList);
             return skuEsModel;
         }).collect(Collectors.toList());
-        ResultBody resultBody = serachService.productUp(esModels);
+        ResultBody resultBody = serachServiceAPI.productUp(esModels);
         if (0 == resultBody.getCode()) {
             SpuInfoEntity spuInfoEntity = new SpuInfoEntity();
             spuInfoEntity.setId(spuId);

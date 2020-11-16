@@ -1,7 +1,7 @@
 package com.iflytek.gulimall.order.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.iflytek.common.utils.PageUtils;
+import com.iflytek.gulimall.common.utils.PageUtils;
 import com.iflytek.gulimall.order.entity.OrderItemEntity;
 
 import java.util.Map;

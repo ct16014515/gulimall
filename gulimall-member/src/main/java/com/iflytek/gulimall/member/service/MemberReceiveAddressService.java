@@ -1,8 +1,9 @@
 package com.iflytek.gulimall.member.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.iflytek.common.utils.PageUtils;
-import com.iflytek.common.utils.ResultBody;
+import com.iflytek.gulimall.common.feign.vo.MemberReceiveAddressVO;
+import com.iflytek.gulimall.common.utils.PageUtils;
+
 import com.iflytek.gulimall.member.entity.MemberReceiveAddressEntity;
 
 import java.util.List;
@@ -19,6 +20,6 @@ public interface MemberReceiveAddressService extends IService<MemberReceiveAddre
 
     PageUtils queryPage(Map<String, Object> params);
 
-    ResultBody<List<MemberReceiveAddressEntity>> getMemberReceiveAddressByUid(Long uid);
+    List<MemberReceiveAddressVO> getMemberReceiveAddressByUid(Long uid);
 }
 

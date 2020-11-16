@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.iflytek.gulimall.product.entity.CategoryEntity;
 import com.iflytek.gulimall.product.service.CategoryService;
-import com.iflytek.common.utils.R;
+import com.iflytek.gulimall.common.utils.R;
 
 
 

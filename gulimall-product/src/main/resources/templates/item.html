@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 
 <head>
@@ -528,8 +529,15 @@
                             <span>￥</span>
                             <span>[[${skuItemVo.info.getPrice()}]]</span>
                         </li>
-                        <li>
-                            预约享资格
+                        <!--当前时间在秒杀时间内 skuItemVo.secSessionSkuVO.seckillPrice-->
+                        <li th:if="${skuItemVo.secSessionSkuVO}">
+                            <span style="color: #C81623" th:if="${#dates.createNow().getTime()>=skuItemVo.secSessionSkuVO.startTime&&
+                           #dates.createNow().getTime()<=skuItemVo.secSessionSkuVO.endTime}">秒杀价:¥[[${T(com.iflytek.gulimall.common.utils.ThymeleafUtil).decimalFormate(skuItemVo.secSessionSkuVO.seckillPrice)}]]</span>
+                            <span style="color: #C81623"
+                                  th:if="${#dates.createNow().getTime()<skuItemVo.secSessionSkuVO.startTime}">
+                                  商品将会在[[${#dates.format(new java.util.Date(skuItemVo.secSessionSkuVO.startTime),"yyyy-MM-dd HH:mm:ss")}]]进行秒杀
+                            </span>
+                            <span style="color: darkgreen">每人限购[[${skuItemVo.secSessionSkuVO.seckillLimit}]]件</span>
                         </li>
                         <li>
                             <a href="static/item/">
@@ -651,8 +659,20 @@
                         </div>
                     </div>
                     <div class="box-btns-two">
-                        <a th:href="${'javascript:addToCart('+skuItemVo.getInfo().getSkuId()+')'}">
-                            加入购物车
+<!--                        <a th:if="${#dates.createNow().getTime()<skuItemVo.secSessionSkuVO.startTime||-->
+<!--                                                   #dates.createNow().getTime()>skuItemVo.secSessionSkuVO.endTime}"-->
+<!--                           th:href="${'javascript:addToCart('+skuItemVo.getInfo().getSkuId()+')'}">-->
+<!--                            加入购物车-->
+<!--                        </a>-->
+                        <a th:if="${skuItemVo.secSessionSkuVO==null||(skuItemVo.secSessionSkuVO!=null&&(#dates.createNow().getTime()<skuItemVo.secSessionSkuVO.startTime||
+                                                   #dates.createNow().getTime()>skuItemVo.secSessionSkuVO.endTime))}"
+                           th:href="${'javascript:addToCart('+skuItemVo.getInfo().getSkuId()+')'}">加入购物车</a>
+
+
+                        <a th:if="${skuItemVo.secSessionSkuVO!=null&&#dates.createNow().getTime()>=skuItemVo.secSessionSkuVO.startTime&&
+                           #dates.createNow().getTime()<=skuItemVo.secSessionSkuVO.endTime}"
+                           th:href="${'javascript:toKill(&quot;'+skuItemVo.secSessionSkuVO.seckillLimit+'&quot;,&quot;'+skuItemVo.secSessionSkuVO.promotionSessionId+'_'+skuItemVo.secSessionSkuVO.skuId+'&quot;,&quot;'+skuItemVo.secSessionSkuVO.randomCode+'&quot;)'}">
+                            立即抢购
                         </a>
                     </div>
                     <div class="box-btns-three">
@@ -1479,7 +1499,7 @@
                                         <span class="oZhu">注</span>：本站商品信息均来自于合作方，其真实性、准确性和合法性由信息拥有者（合作方）负责。本站不提供任何保证，并不承担任何法律责任。
                                     </div>
                                 </div>
-                                <div class="quanLi jiaGe">
+                                <div class="quanLi jiaGe" >
                                     <h4>价格说明:</h4>
                                     <div class="jingDong">
                                         <span class="oZhu">京东价</span>：京东价为商品的销售价，是您最终决定是否购买商品的依据。<br/>
@@ -1782,7 +1802,7 @@
 
 <script src="static/item/js/jquery1.9.js" type="text/javascript" charset="utf-8"></script>
 <script src="static/item/js/js.js" type="text/javascript" charset="utf-8"></script>
-<script type="text/javascript">
+<script type="text/javascript" th:inline="javascript">
     var href = window.location.href;
     var encodehref = encodeURIComponent(href);
 
@@ -1791,12 +1811,29 @@
         href = encodeURIComponent(href); //会对整个url编码 包括特殊符号= &
         window.location.href = "http://auth.gulimall.com/login.html?returnUrl=" + encodehref;
     }
+
     function logout() {
-        window.location.href = "http://auth.gulimall.com/logout.html?returnUrl="+encodehref;
+        window.location.href = "http://auth.gulimall.com/logout.html?returnUrl=" + encodehref;
     }
+
     function addToCart(skuId) {
-      var number = parseInt($("#num").val());
-      window.location.href="http://cart.gulimall.com/addToCart.html?skuId="+skuId+"&num="+number;
+        var number = parseInt($("#num").val());
+        window.location.href = "http://cart.gulimall.com/addToCart.html?skuId=" + skuId + "&num=" + number;
+    }
+
+    function toKill(limitNumber,key,randomCode) {
+        let loginUser = [[${session.loginUser}]];
+        if (loginUser) {
+            let number = parseInt($("#num").val());
+                if (number > limitNumber) {
+                    alert("不能超过商品的限购数量")
+                } else {
+                    if (key && randomCode)
+                        window.location.href = `http://seckill.gulimall.com/kill?key=${key}&randomCode=${randomCode}&number=${number}`
+                }
+        } else {
+            login();
+        }
     }
 
 

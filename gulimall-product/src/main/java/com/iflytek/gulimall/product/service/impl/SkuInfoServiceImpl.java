@@ -1,14 +1,19 @@
 package com.iflytek.gulimall.product.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.iflytek.common.model.vo.order.OrderItemVO;
-import com.iflytek.common.model.vo.product.SkuInfoPriceVO;
-import com.iflytek.common.utils.ResultBody;
+
+import com.iflytek.gulimall.common.feign.SeckillServiceAPI;
+import com.iflytek.gulimall.common.feign.vo.OrderItemVO;
+import com.iflytek.gulimall.common.feign.vo.SecSessionSkuVO;
+import com.iflytek.gulimall.common.feign.vo.SeckillSkuVO;
+import com.iflytek.gulimall.common.feign.vo.SkuInfoPriceVO;
+import com.iflytek.gulimall.common.utils.ResultBody;
+
 import com.iflytek.gulimall.product.dao.SpuInfoDao;
 import com.iflytek.gulimall.product.entity.SkuImagesEntity;
 import com.iflytek.gulimall.product.entity.SpuInfoDescEntity;
 import com.iflytek.gulimall.product.entity.SpuInfoEntity;
-import com.iflytek.gulimall.product.feign.SeckillService;
+
 import com.iflytek.gulimall.product.service.*;
 import com.iflytek.gulimall.product.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +29,8 @@ import java.util.stream.Collectors;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.iflytek.common.utils.PageUtils;
-import com.iflytek.common.utils.Query;
+import com.iflytek.gulimall.common.utils.PageUtils;
+import com.iflytek.gulimall.common.utils.Query;
 
 import com.iflytek.gulimall.product.dao.SkuInfoDao;
 import com.iflytek.gulimall.product.entity.SkuInfoEntity;
@@ -47,16 +52,21 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
     private SkuImagesService skuImagesService;
 
     @Autowired
-    private SeckillService seckillFeignService;
+    private SeckillServiceAPI seckillFeignService;
 
     @Autowired
     private SpuInfoDao spuInfoDao;
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
+        QueryWrapper<SkuInfoEntity> skuInfoEntityQueryWrapper = new QueryWrapper<>();
+        if (params.get("skuIds")!=null){
+            List<Long> skuIds= (List<Long>) params.get("skuIds");
+            skuInfoEntityQueryWrapper.in("skuId", skuIds);
+        }
         IPage<SkuInfoEntity> page = this.page(
                 new Query<SkuInfoEntity>().getPage(params),
-                new QueryWrapper<SkuInfoEntity>()
+                skuInfoEntityQueryWrapper
         );
 
         return new PageUtils(page);
@@ -114,17 +124,10 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
 
         CompletableFuture<Void> seckillFuture = CompletableFuture.runAsync(() -> {
             //3、远程调用查询当前sku是否参与秒杀优惠活动
-            ResultBody<SeckillSkuVo> skuSeckilInfo = seckillFeignService.getSkuSeckilInfo(skuId);
+            ResultBody<SecSessionSkuVO> skuSeckilInfo = seckillFeignService.getSecSessionSkuVOBySkuId(skuId);
             if (skuSeckilInfo.getCode() == 0) {
-                //查询成功
-                SeckillSkuVo seckillSkuVo = skuSeckilInfo.getData();
-                skuItemVo.setSeckillSkuVo(seckillSkuVo);
-                if (seckillSkuVo != null) {
-                    long currentTime = System.currentTimeMillis();
-                    if (currentTime > seckillSkuVo.getEndTime()) {
-                        skuItemVo.setSeckillSkuVo(null);
-                    }
-                }
+                SecSessionSkuVO seckillSkuVo = skuSeckilInfo.getData();
+                skuItemVo.setSecSessionSkuVO(seckillSkuVo);
             }
         }, executor);
         //等到所有任务都完成
@@ -162,7 +165,7 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
     @Override
     public ResultBody<List<String>> getskuAttrsBySkuId(Long skuId) {
         List<String> list = baseMapper.getskuAttrsBySkuId(skuId);
-        return new ResultBody(list);
+        return new ResultBody<>(list);
     }
 
     @Override

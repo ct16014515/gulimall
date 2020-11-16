@@ -1,10 +1,12 @@
 package com.iflytek.gulimall.product.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.iflytek.common.model.vo.order.OrderItemVO;
-import com.iflytek.common.model.vo.product.SkuInfoPriceVO;
-import com.iflytek.common.utils.PageUtils;
-import com.iflytek.common.utils.ResultBody;
+
+import com.iflytek.gulimall.common.feign.vo.OrderItemVO;
+import com.iflytek.gulimall.common.feign.vo.SkuInfoPriceVO;
+import com.iflytek.gulimall.common.utils.PageUtils;
+import com.iflytek.gulimall.common.utils.ResultBody;
+
 import com.iflytek.gulimall.product.entity.SkuInfoEntity;
 import com.iflytek.gulimall.product.vo.SkuItemVo;
 

@@ -1,12 +1,13 @@
 package com.iflytek.gulimall.cart.service;
 
 import com.alibaba.fastjson.JSON;
-import com.iflytek.common.constant.CartConstant;
-import com.iflytek.common.model.vo.cart.CartItemVO;
-import com.iflytek.common.model.vo.product.SkuInfoVO;
-import com.iflytek.common.utils.ResultBody;
-import com.iflytek.gulimall.cart.feign.ProductService;
-import com.iflytek.gulimall.cart.feign.WareService;
+import com.iflytek.gulimall.common.constant.CartConstant;
+
+import com.iflytek.gulimall.common.feign.ProductServiceAPI;
+import com.iflytek.gulimall.common.feign.vo.CartItemVO;
+import com.iflytek.gulimall.common.feign.vo.SkuInfoVO;
+import com.iflytek.gulimall.common.utils.ResultBody;
+
 import com.iflytek.gulimall.cart.interceptor.CartInterceptor;
 import com.iflytek.gulimall.cart.to.UserInfoTO;
 import com.iflytek.gulimall.cart.vo.CartVO;
@@ -35,10 +36,9 @@ public class CartService {
 
 
     @Autowired
-    private ProductService productService;
+    private ProductServiceAPI productServiceAPI;
 
-    @Autowired
-    private WareService wareService;
+
 
 
     /**
@@ -59,7 +59,7 @@ public class CartService {
             cartItemVO.setSkuId(skuId);
             CompletableFuture<Void> SkuInfoVOFuture = CompletableFuture.runAsync(() -> {
                 //获取sku属性
-                ResultBody<SkuInfoVO> info = productService.info(skuId);
+                ResultBody<SkuInfoVO> info = productServiceAPI.info(skuId);
                 SkuInfoVO skuInfoVO = info.getData();
                 cartItemVO.setSkuCount(num);
                 cartItemVO.setSkuImg(skuInfoVO.getSkuDefaultImg());
@@ -69,7 +69,7 @@ public class CartService {
                 cartItemVO.setWeight(skuInfoVO.getWeight());
             }, executor);
             CompletableFuture<Void> skuAttrsFuture = CompletableFuture.runAsync(() -> {
-                ResultBody<List<String>> resultBody = productService.getskuAttrsBySkuId(skuId);
+                ResultBody<List<String>> resultBody = productServiceAPI.getskuAttrsBySkuId(skuId);
                 List<String> skuAttrs = resultBody.getData();
                 cartItemVO.setSkuAttrs(skuAttrs);
             }, executor);
@@ -262,7 +262,7 @@ public class CartService {
             CartItemVO cartItemVO = JSON.parseObject(value, CartItemVO.class);
             //获取选中的
             if (cartItemVO.getIsChecked() == 0) {
-                ResultBody<SkuInfoVO> info = productService.info(cartItemVO.getSkuId());
+                ResultBody<SkuInfoVO> info = productServiceAPI.info(cartItemVO.getSkuId());
                 SkuInfoVO skuInfoVO = info.getData();
                 cartItemVO.setSkuPrice(skuInfoVO.getPrice());
                 cartItemVO.setSkuTotalMoney(skuInfoVO.getPrice().multiply(new BigDecimal(cartItemVO.getSkuCount())));

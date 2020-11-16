@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.*;
 
 import com.iflytek.gulimall.product.entity.SpuInfoEntity;
 import com.iflytek.gulimall.product.service.SpuInfoService;
-import com.iflytek.common.utils.PageUtils;
-import com.iflytek.common.utils.R;
+import com.iflytek.gulimall.common.utils.PageUtils;
+import com.iflytek.gulimall.common.utils.R;
 
 
 

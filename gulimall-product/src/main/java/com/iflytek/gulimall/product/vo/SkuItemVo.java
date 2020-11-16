@@ -1,5 +1,8 @@
 package com.iflytek.gulimall.product.vo;
 
+import com.iflytek.gulimall.common.feign.vo.SecSessionSkuVO;
+import com.iflytek.gulimall.common.feign.vo.SeckillSkuVO;
+
 import com.iflytek.gulimall.product.entity.SkuImagesEntity;
 import com.iflytek.gulimall.product.entity.SkuInfoEntity;
 import com.iflytek.gulimall.product.entity.SpuInfoDescEntity;
@@ -33,7 +36,7 @@ public class SkuItemVo {
     //5、获取spu的规格参数信息
     private List<SpuItemAttrGroupVo> groupAttrs;
 
-    //6、秒杀商品的优惠信息
-    private SeckillSkuVo seckillSkuVo;
+    //6、查看此商品正在参与的秒杀预告信息
+    private SecSessionSkuVO secSessionSkuVO;
 
 }

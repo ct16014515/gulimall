@@ -1,9 +1,8 @@
 package com.iflytek.gulimall.thirdparty.component;
 
-import com.iflytek.common.utils.ResultBody;
+import com.iflytek.gulimall.common.utils.ResultBody;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;

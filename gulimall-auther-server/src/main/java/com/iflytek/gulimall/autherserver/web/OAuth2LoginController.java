@@ -1,13 +1,14 @@
 package com.iflytek.gulimall.autherserver.web;
 
 import com.alibaba.fastjson.JSON;
-import com.iflytek.common.model.vo.auth.Auth2SocialVO;
-import com.iflytek.common.model.vo.memeber.MemberVO;
-import com.iflytek.common.utils.CookieUtils;
-import com.iflytek.common.utils.HttpUtils;
-import com.iflytek.common.utils.ResultBody;
+import com.iflytek.gulimall.common.feign.MemberServiceAPI;
+import com.iflytek.gulimall.common.feign.vo.Auth2SocialVO;
+import com.iflytek.gulimall.common.feign.vo.MemberVO;
+import com.iflytek.gulimall.common.utils.CookieUtils;
+import com.iflytek.gulimall.common.utils.HttpUtils;
+import com.iflytek.gulimall.common.utils.ResultBody;
 import com.iflytek.gulimall.autherserver.component.Auth2WeiBoComponent;
-import com.iflytek.gulimall.autherserver.feign.MemberService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
@@ -23,7 +24,7 @@ import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.iflytek.common.constant.AutherServerConstant.*;
+import static com.iflytek.gulimall.common.constant.AutherServerConstant.*;
 
 @Controller
 @RequestMapping("auth2")
@@ -33,7 +34,7 @@ public class OAuth2LoginController {
     private Auth2WeiBoComponent auth2WeiBoComponent;
 
     @Autowired
-    MemberService memberService;
+    MemberServiceAPI memberServiceAPI;
 
     @GetMapping("/weibo/login/success")
     public String auth2WeiBoLoginSuccess(@RequestParam("code") String code,
@@ -59,7 +60,7 @@ public class OAuth2LoginController {
         if (!StringUtils.isEmpty(auth2VO.getAccess_token())) {
             //调用会员登录
             auth2VO.setType(1);
-            ResultBody<MemberVO> memberVOResultBody = memberService.auth2Login(auth2VO);
+            ResultBody<MemberVO> memberVOResultBody = memberServiceAPI.auth2Login(auth2VO);
             if (0 == memberVOResultBody.getCode()) {
                 MemberVO memberVO = memberVOResultBody.getData();
                 session.setAttribute(LOGIN_USER, memberVO);

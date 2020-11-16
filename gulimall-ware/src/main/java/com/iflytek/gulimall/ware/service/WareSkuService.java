@@ -3,13 +3,16 @@ package com.iflytek.gulimall.ware.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 
-import com.iflytek.common.model.vo.order.OrderEntityVO;
-import com.iflytek.common.model.vo.product.WareHasStockVO;
-import com.iflytek.common.model.vo.product.WareSkuLockVO;
-import com.iflytek.common.utils.PageUtils;
-import com.iflytek.common.utils.ResultBody;
+import com.iflytek.gulimall.common.feign.vo.WareHasStockVO;
+import com.iflytek.gulimall.common.feign.vo.WareSkuLockVO;
+import com.iflytek.gulimall.common.model.mq.to.OrderEntityPayedTO;
+import com.iflytek.gulimall.common.model.mq.to.OrderEntityReleaseTO;
+import com.iflytek.gulimall.common.model.mq.to.WareStockDelayTO;
+
+import com.iflytek.gulimall.common.utils.PageUtils;
+import com.iflytek.gulimall.common.utils.ResultBody;
+
 import com.iflytek.gulimall.ware.entity.WareSkuEntity;
-import com.iflytek.gulimall.ware.vo.WareStockDelayVO;
 
 
 import java.util.List;
@@ -32,8 +35,10 @@ public interface WareSkuService extends IService<WareSkuEntity> {
 
     ResultBody wareSkuLock(WareSkuLockVO wareSkuLockVO);
 
-    void stockRelease(WareStockDelayVO wareStockDelayVO);
+    void stockRelease(WareStockDelayTO wareStockDelayTO);
 
-    void stockRelease(OrderEntityVO orderEntityVO);
+    void stockRelease(OrderEntityReleaseTO orderEntityReleaseTO);
+
+    void stockReduce(OrderEntityPayedTO orderEntityPayedTO);
 }
 

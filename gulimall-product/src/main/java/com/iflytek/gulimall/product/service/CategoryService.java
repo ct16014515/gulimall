@@ -1,7 +1,7 @@
 package com.iflytek.gulimall.product.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.iflytek.common.utils.PageUtils;
+import com.iflytek.gulimall.common.utils.PageUtils;
 import com.iflytek.gulimall.product.entity.CategoryEntity;
 import com.iflytek.gulimall.product.vo.Catalog2Vo;
 

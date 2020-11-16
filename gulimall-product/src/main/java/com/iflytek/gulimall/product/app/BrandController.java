@@ -4,15 +4,15 @@ import java.util.Arrays;
 import java.util.Map;
 
 
-import com.iflytek.common.vliadte.AddGroup;
+import com.iflytek.gulimall.common.vliadte.AddGroup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import com.iflytek.gulimall.product.entity.BrandEntity;
 import com.iflytek.gulimall.product.service.BrandService;
-import com.iflytek.common.utils.PageUtils;
-import com.iflytek.common.utils.R;
+import com.iflytek.gulimall.common.utils.PageUtils;
+import com.iflytek.gulimall.common.utils.R;
 
 
 /**

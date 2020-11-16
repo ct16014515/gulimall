@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.iflytek.gulimall.coupon.entity.SpuBoundsEntity;
 import com.iflytek.gulimall.coupon.service.SpuBoundsService;
-import com.iflytek.common.utils.PageUtils;
-import com.iflytek.common.utils.R;
+import com.iflytek.gulimall.common.utils.PageUtils;
+import com.iflytek.gulimall.common.utils.R;
 
 
 
@@ -23,7 +23,7 @@ import com.iflytek.common.utils.R;
  *
  * @author rclin
  * @email rclin@iflytek.com
- * @date 2020-06-07 11:02:59
+ * @date 2020-10-19 16:40:01
  */
 @RestController
 @RequestMapping("coupon/spubounds")

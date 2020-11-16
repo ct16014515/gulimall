@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <title>谷粒商城订单</title>
     <link rel="shortcut icon" href="static/index/img/favicon.ico">
-    <link rel="stylesheet" href="static/order/pay/css\style.css">
-    <script src="static/order/pay/js\jquery-3.1.1.min.js" charset="utf-8"></script>
+    <link rel="stylesheet" href="static/order/pay/css/style.css">
+    <script src="static/order/pay/js/jquery-3.1.1.min.js" charset="utf-8"></script>
 </head>
 <body>
 <div class="One_Jdbox">
@@ -101,10 +101,12 @@
     <div class="Jd_footer">
         <ul>
             <li>
-                <img src="static/order/pay/img\weixin.png" alt="">微信支付
+                <img src="static/order/pay/img\weixin.png" alt=""><a
+                    th:href="@{'http://order.gulimall.com/weixiPayOrder?orderSn='+${orderEntity.getOrderSn()}}">微信支付</a>
             </li>
             <li>
-                <img src="static/order/pay/img\zhifubao.png" style="weight:auto;height:30px;" alt="">支付宝
+                <img src="static/order/pay/img\zhifubao.png" style="weight:auto;height:30px;" alt="">
+                <a th:href="@{'http://order.gulimall.com/aliPayOrder?orderSn='+${orderEntity.getOrderSn()}}">支付宝</a>
             </li>
         </ul>
     </div>

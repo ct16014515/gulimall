@@ -1,10 +1,29 @@
-spring:
-  cloud:
-    nacos:
-      discovery:
-        server-addr: 172.31.197.22:18848
-        namespace: 4cbfefb7-7281-4479-8047-6aff8ab48ac2
-  application:
-    name: gulimall-seckill
 server:
   port: 13000
+  undertow:
+    io-threads: 4 # 设置IO线程数, 它主要执行非阻塞的任务,它们会负责多个连接, 默认设置每个CPU核心一个线程
+    worker-threads: 120  # 阻塞任务线程池, 当执行类似servlet请求阻塞操作, undertow会从这个线程池中取得线程,它的值设置取决于系统的负载
+    buffer-size: 2048  # 以下的配置会影响buffer,这些buffer会用于服务器连接的IO操作,有点类似netty的池化内存管理 , 每块buffer的空间大小,越小的空间被利用越充分
+    direct-buffers: true  # 是否分配的直接内存
+spring:
+  application:
+    name: gulimall-seckill
+  task:
+    execution:
+      pool:
+        core-size: 20
+        max-size: 50
+  thymeleaf:
+    cache: false
+  cloud:
+    sentinel:
+      transport:
+        port: 8719  #这里的 spring.cloud.sentinel.transport.port 端口配置会在应用对应的机器上启动一个 Http Server，该 Server 会与 Sentinel控制台做交互。比如 Sentinel 控制台添加了一个限流规则，会把规则数据 push 给这个 Http Server 接收，Http Server 再将规则注册到 Sentinel 中
+        dashboard: 192.168.56.10:8090
+#暴露所有端点
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+

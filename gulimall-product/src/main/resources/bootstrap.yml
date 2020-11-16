@@ -4,17 +4,20 @@ spring:
   cloud:
     nacos:
       config:
-        server-addr: 192.168.56.10:8848 #nacos中心地址
-        file-extension: yaml # 配置文件格式
+        server-addr: 192.168.56.10:8848
         namespace: 93ab9b83-cca4-48b5-abad-8a46f12ac0ba
         ext-config:
-          - data-id: nacos.yml   #服务发现地址统一配置 如果只需要改一次服务发现地址
-    alicloud:
-      access-key: LTAI4Fz5L3Cv3oddewnSaGDy
-      secret-key: g9nZchfL4c6UYEi8tp7zAdM5rsXXJa
-      oss:
-        endpoint: oss-cn-shanghai.aliyuncs.com
-    alibaba:
-      seata:
-        tx-service-group: my_test_tx_group
+          - dataId: redis.yml
+          - dataId: druidDatasourceView.yml
+        file-extension: yml
+      discovery:
+        namespace: 93ab9b83-cca4-48b5-abad-8a46f12ac0ba
+        server-addr: 192.168.56.10:8848
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: GMT+8
+
+
+
+
 

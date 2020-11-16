@@ -12,7 +12,7 @@ import lombok.Data;
  * 
  * @author rclin
  * @email rclin@iflytek.com
- * @date 2020-06-07 11:02:59
+ * @date 2020-10-19 16:40:01
  */
 @Data
 @TableName("sms_seckill_sku_notice")

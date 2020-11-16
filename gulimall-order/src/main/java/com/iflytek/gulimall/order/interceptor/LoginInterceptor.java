@@ -1,6 +1,8 @@
 package com.iflytek.gulimall.order.interceptor;
 
-import com.iflytek.common.model.vo.memeber.MemberVO;
+
+import com.iflytek.gulimall.common.feign.vo.MemberVO;
+
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.StringUtils;
@@ -10,11 +12,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import java.net.URLEncoder;
-import java.util.Enumeration;
-import java.util.Map;
-import java.util.Set;
 
-import static com.iflytek.common.constant.AutherServerConstant.*;
+import static com.iflytek.gulimall.common.constant.AutherServerConstant.LOGIN_USER;
+import static com.iflytek.gulimall.common.constant.AutherServerConstant.URL_LOGIN;
 
 @Component
 public class LoginInterceptor implements HandlerInterceptor {
@@ -23,20 +23,18 @@ public class LoginInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        String requestURI1 = request.getRequestURI();
+        String requestURI = request.getRequestURI();
         AntPathMatcher antPathMatcher = new AntPathMatcher();
-        boolean match = antPathMatcher.match("/order/order/getOrderEntityByOrderSn/**", requestURI1);
-        if (match){
+        if (antPathMatcher.match("/order/**", requestURI)||
+                antPathMatcher.match("/order/aliPayNotifyUrl/**", requestURI)||
+                antPathMatcher.match("/order/wxPayNotifyUrl/**", requestURI)){
             return true;
         }
-
         Object attribute = request.getSession().getAttribute(LOGIN_USER);
         if (attribute == null) {
             String host = request.getHeader("X-Forwarded-Host");
-            String requestURI = requestURI1;
             String returnUrl = "http://" + host + requestURI;
             String queryString = request.getQueryString();
-            //判断url带不带参数
             if (!StringUtils.isEmpty(queryString)) {
                 returnUrl = returnUrl + "?" + queryString;
             }

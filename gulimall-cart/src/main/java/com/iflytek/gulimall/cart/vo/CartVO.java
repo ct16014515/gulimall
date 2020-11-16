@@ -1,6 +1,7 @@
 package com.iflytek.gulimall.cart.vo;
 
-import com.iflytek.common.model.vo.cart.CartItemVO;
+
+import com.iflytek.gulimall.common.feign.vo.CartItemVO;
 import lombok.Data;
 import lombok.ToString;
 

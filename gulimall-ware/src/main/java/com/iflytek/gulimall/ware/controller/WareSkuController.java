@@ -5,17 +5,19 @@ import java.util.List;
 import java.util.Map;
 
 
-import com.iflytek.common.model.vo.product.WareHasStockVO;
+import com.iflytek.gulimall.common.feign.WareServiceAPI;
+import com.iflytek.gulimall.common.feign.vo.WareHasStockVO;
+import com.iflytek.gulimall.common.feign.vo.WareSkuLockVO;
+import com.iflytek.gulimall.common.utils.ResultBody;
 
-import com.iflytek.common.model.vo.product.WareSkuLockVO;
-import com.iflytek.common.utils.ResultBody;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import com.iflytek.gulimall.ware.entity.WareSkuEntity;
 import com.iflytek.gulimall.ware.service.WareSkuService;
-import com.iflytek.common.utils.PageUtils;
-import com.iflytek.common.utils.R;
+import com.iflytek.gulimall.common.utils.PageUtils;
+import com.iflytek.gulimall.common.utils.R;
 
 
 /**
@@ -27,7 +29,7 @@ import com.iflytek.common.utils.R;
  */
 @RestController
 @RequestMapping("ware/waresku")
-public class WareSkuController {
+public class WareSkuController implements WareServiceAPI {
     @Autowired
     private WareSkuService wareSkuService;
 

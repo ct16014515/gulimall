@@ -5,8 +5,8 @@ import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.iflytek.common.utils.PageUtils;
-import com.iflytek.common.utils.Query;
+import com.iflytek.gulimall.common.utils.PageUtils;
+import com.iflytek.gulimall.common.utils.Query;
 
 import com.iflytek.gulimall.coupon.dao.CouponDao;
 import com.iflytek.gulimall.coupon.entity.CouponEntity;
@@ -22,7 +22,6 @@ public class CouponServiceImpl extends ServiceImpl<CouponDao, CouponEntity> impl
                 new Query<CouponEntity>().getPage(params),
                 new QueryWrapper<CouponEntity>()
         );
-
         return new PageUtils(page);
     }
 

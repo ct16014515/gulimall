@@ -1,8 +1,8 @@
 package com.iflytek.gulimall.search.controller;
 
 
-import com.iflytek.common.exception.GulimallExceptinCodeEnum;
-import com.iflytek.common.utils.ResultBody;
+import com.iflytek.gulimall.common.exception.GulimallExceptinCodeEnum;
+import com.iflytek.gulimall.common.utils.ResultBody;
 import com.iflytek.gulimall.search.service.MallSearchService;
 import com.iflytek.gulimall.search.vo.SearchParam;
 
@@ -32,7 +32,7 @@ public class SearchController {
         SearchResult searchResult = mallSearchService.search(paramEo);
         ResultBody<SearchResult> resultBody;
         if (searchResult!=null){
-            resultBody=new ResultBody(0,"success",searchResult);
+            resultBody=new ResultBody(searchResult);
         }else {
             resultBody=new ResultBody(GulimallExceptinCodeEnum.PRODUCT_SEARCH_ERROR,null);
         }

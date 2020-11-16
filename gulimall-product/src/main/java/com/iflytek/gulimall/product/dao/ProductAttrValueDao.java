@@ -1,6 +1,6 @@
 package com.iflytek.gulimall.product.dao;
 
-import com.iflytek.common.model.es.Attr;
+import com.iflytek.gulimall.common.model.es.Attr;
 import com.iflytek.gulimall.product.entity.ProductAttrValueEntity;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;

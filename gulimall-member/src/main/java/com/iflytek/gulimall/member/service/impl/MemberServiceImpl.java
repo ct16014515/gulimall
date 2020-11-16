@@ -2,13 +2,18 @@ package com.iflytek.gulimall.member.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.iflytek.common.exception.GulimallExceptinCodeEnum;
-import com.iflytek.common.model.vo.auth.Auth2SocialVO;
-import com.iflytek.common.model.vo.memeber.MemberRegisterVO;
-import com.iflytek.common.model.vo.memeber.MemberVO;
-import com.iflytek.common.model.vo.memeber.UserLoginVO;
-import com.iflytek.common.utils.*;
+import com.iflytek.gulimall.common.exception.GulimallExceptinCodeEnum;
+
+import com.iflytek.gulimall.common.feign.vo.Auth2SocialVO;
+import com.iflytek.gulimall.common.feign.vo.MemberVO;
+import com.iflytek.gulimall.common.feign.vo.RegisterVO;
+import com.iflytek.gulimall.common.feign.vo.UserLoginVO;
+import com.iflytek.gulimall.common.utils.HttpUtils;
+import com.iflytek.gulimall.common.utils.PageUtils;
+import com.iflytek.gulimall.common.utils.Query;
+import com.iflytek.gulimall.common.utils.ResultBody;
 import com.iflytek.gulimall.member.dao.MemberLevelDao;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -24,7 +29,6 @@ import com.iflytek.gulimall.member.dao.MemberDao;
 import com.iflytek.gulimall.member.entity.MemberEntity;
 import com.iflytek.gulimall.member.service.MemberService;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 
 
 @Service("memberService")
@@ -34,6 +38,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
     MemberLevelDao memberLevelDao;
     @Autowired
     MemberDao memberDao;
+
 
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
@@ -49,19 +54,19 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
     /**
      * 用户注册
      *
-     * @param memberRegisterVO
+     * @param
      * @return
      */
     @Override
     @Transactional
-    public ResultBody register(MemberRegisterVO memberRegisterVO) {
+    public ResultBody register(RegisterVO registerVO) {
         //查询此手机号和姓名是否已经存在
-        Integer phoneCount = memberDao.selectCountByPhone(memberRegisterVO.getPhone());
+        Integer phoneCount = memberDao.selectCountByPhone(registerVO.getPhone());
         if (phoneCount > 0) {
             return new ResultBody(GulimallExceptinCodeEnum.MEMBER_PHONE_EXIT_ERROR, null);
         }
         //查询此手机号和姓名是否已经存在
-        Integer usernameCount = memberDao.selectCountByUsername(memberRegisterVO.getUsername());
+        Integer usernameCount = memberDao.selectCountByUsername(registerVO.getUsername());
         if (usernameCount > 0) {
             return new ResultBody(GulimallExceptinCodeEnum.MEMBER_USERNAME_EXIT_ERROR, null);
         }
@@ -69,12 +74,12 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
         Long levelId = memberLevelDao.selectDefalutLevelId();
         MemberEntity memberEntity = new MemberEntity();
         memberEntity.setLevelId(levelId);
-        String password = memberRegisterVO.getPassword();
+        String password = registerVO.getPassword();
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
         String encodePassword = bCryptPasswordEncoder.encode(password);
         memberEntity.setPassword(encodePassword);
-        memberEntity.setMobile(memberRegisterVO.getPhone());
-        memberEntity.setUsername(memberRegisterVO.getUsername());
+        memberEntity.setMobile(registerVO.getPhone());
+        memberEntity.setUsername(registerVO.getUsername());
         String nickName = UUID.randomUUID().toString().replaceAll("-", "").substring(0, 8);
         memberEntity.setNickname("gl_" + nickName);
         memberEntity.setIntegration(0);
@@ -109,7 +114,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
         MemberVO memberVO = new MemberVO();
         memberVO.setUserId(memberEntity.getId());
         memberVO.setNickname(memberEntity.getNickname());
-        memberVO.setIntegration(memberEntity.getIntegration()==null?0:memberEntity.getIntegration());
+        memberVO.setIntegration(memberEntity.getIntegration() == null ? 0 : memberEntity.getIntegration());
         return new ResultBody(memberVO);
     }
 
@@ -121,7 +126,7 @@ public class MemberServiceImpl extends ServiceImpl<MemberDao, MemberEntity> impl
         if (auth2SocialVO.getType() == 1) {
             //如果是微博
             return getWeiboMemberVOResultBody(auth2SocialVO, memberEntity);
-        }else {
+        } else {
             return new ResultBody<>();
         }
 

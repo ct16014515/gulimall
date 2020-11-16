@@ -1,7 +1,7 @@
 package com.iflytek.gulimall.product.exception;
 
-import com.iflytek.common.exception.GulimallExceptinCodeEnum;
-import com.iflytek.common.utils.R;
+import com.iflytek.gulimall.common.exception.GulimallExceptinCodeEnum;
+import com.iflytek.gulimall.common.utils.R;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;

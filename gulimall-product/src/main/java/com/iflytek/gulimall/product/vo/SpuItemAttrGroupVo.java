@@ -1,6 +1,6 @@
 package com.iflytek.gulimall.product.vo;
 
-import com.iflytek.common.model.es.Attr;
+import com.iflytek.gulimall.common.model.es.Attr;
 import lombok.Data;
 import lombok.ToString;
 

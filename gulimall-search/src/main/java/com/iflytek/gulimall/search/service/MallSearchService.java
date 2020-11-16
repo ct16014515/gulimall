@@ -2,9 +2,7 @@ package com.iflytek.gulimall.search.service;
 
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.TypeReference;
-import com.iflytek.common.exception.RRException;
-import com.iflytek.common.model.es.SkuEsModel;
+import com.iflytek.gulimall.common.model.es.SkuEsModel;
 import com.iflytek.gulimall.search.constant.EsConstant;
 import com.iflytek.gulimall.search.vo.*;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +14,6 @@ import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.common.text.Text;
 import org.elasticsearch.index.query.*;
 import org.elasticsearch.search.SearchHit;
-import org.elasticsearch.search.aggregations.Aggregation;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.Aggregations;
 import org.elasticsearch.search.aggregations.bucket.nested.Nested;
@@ -37,8 +34,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.iflytek.common.exception.GulimallExceptinCodeEnum.PRODUCT_SEARCH_ERROR;
-
 @Service
 @Slf4j
 public class MallSearchService {
@@ -57,7 +52,7 @@ public class MallSearchService {
          * 构造查询条件
          */
         SearchRequest searchRequest = buildSearchRequest(param);
-        if (searchRequest==null){
+        if (searchRequest == null) {
             return null;
         }
         SearchResponse search = restHighLevelClient.search(searchRequest, RequestOptions.DEFAULT);
@@ -165,7 +160,7 @@ public class MallSearchService {
             brandVOS.add(brandVO);
         }
         searchResult.setBrandVOS(brandVOS);
-       // System.out.println("品牌聚合结果为:" + brandVOS);
+        // System.out.println("品牌聚合结果为:" + brandVOS);
         /**
          * 分类聚合结果
          * "categoryAgg" : {
@@ -204,7 +199,7 @@ public class MallSearchService {
             }
             categoryVOS.add(categoryVO);
         }
-       // System.out.println("分类聚合的结果为:" + categoryVOS);
+        // System.out.println("分类聚合的结果为:" + categoryVOS);
         searchResult.setCategoryVOS(categoryVOS);
         /**
          * 属性聚合
@@ -388,10 +383,10 @@ public class MallSearchService {
             attrVO.setAttrValue(attrValues);
             attrVOS.add(attrVO);
         }
-      //  System.out.println("属性聚合结果为:" + attrVOS);
+        //  System.out.println("属性聚合结果为:" + attrVOS);
 
         searchResult.setAttrVOS(attrVOS);
-        attrVOS.stream().map(item->{
+        attrVOS.stream().map(item -> {
             return item.getAttrName();
         }).collect(Collectors.toList());
 
@@ -405,8 +400,9 @@ public class MallSearchService {
         BoolQueryBuilder boolQueryBuilder = QueryBuilders.boolQuery();
         //查询条件.如果关键字为空则匹配全部
         QueryBuilder queryBuilder = null;
+        //如果入参关键字和分类都为空,则
         if (StringUtils.isEmpty(param.getKeyword())) {
-          return null;
+            return null;
         } else {
             queryBuilder = QueryBuilders.matchQuery("skuTitle", param.getKeyword());//关键字匹配
         }
@@ -578,7 +574,7 @@ public class MallSearchService {
         nestedAggregationBuilder.subAggregation(attrIdAgg);
         sourceBuilder.aggregation(nestedAggregationBuilder);
         searchRequest.source(sourceBuilder);
-        System.out.println("dsl为:"+sourceBuilder);
+        System.out.println("dsl为:" + sourceBuilder);
         return searchRequest;
     }
 

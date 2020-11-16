@@ -1,6 +1,8 @@
 package com.iflytek.gulimall.product.dao;
 
-import com.iflytek.common.model.vo.product.SkuInfoPriceVO;
+
+import com.iflytek.gulimall.common.feign.vo.SkuInfoPriceVO;
+
 import com.iflytek.gulimall.product.entity.SkuInfoEntity;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;

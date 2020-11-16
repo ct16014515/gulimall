@@ -12,7 +12,18 @@ spring:  #spring.cloud.alicloud.sms
         appcode: 9ff6ad4a3b514c3780e554eb99c42b3d
         sign: 1
         skin: 2
+
+    sentinel:
+      transport:
+        port: 8728
+        dashboard: 192.168.56.10:8090
+
   application:
     name: gulimall-third-party
 server:
   port: 30000
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'

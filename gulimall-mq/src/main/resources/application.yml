@@ -1,0 +1,30 @@
+spring:
+  application:
+    name: gulimall-mq
+  cloud:
+    sentinel:
+      transport:
+        port: 8724
+        dashboard: 192.168.56.10:8090
+  data:
+    mongodb:
+      uri:  mongodb://root:root@192.168.56.10:27017/gulimall
+      database: gulimall
+  rabbitmq:
+    host: 192.168.56.10
+    virtual-host: /
+    port: 5672
+    publisher-confirm-type: correlated  # 开启发送端消息抵达Broker确认 使用correlated方式
+    publisher-returns: true # 开启发送端消息抵达Queue确认 消息没有抵达队列会触发此回调
+    template:
+      mandatory: true #只要消息抵达Queue失败，就会异步发送优先回调returnconfirm
+    listener:
+      simple:
+        acknowledge-mode: manual  #消费端手动确认
+server:
+  port: 0
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'

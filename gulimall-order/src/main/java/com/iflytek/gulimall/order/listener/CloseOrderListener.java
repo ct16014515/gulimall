@@ -1,6 +1,7 @@
 package com.iflytek.gulimall.order.listener;
 
-import com.iflytek.gulimall.order.entity.OrderEntity;
+import com.iflytek.gulimall.common.feign.MqServiceAPI;
+import com.iflytek.gulimall.common.model.mq.to.OrderEntityReleaseTO;
 import com.iflytek.gulimall.order.service.OrderService;
 import com.rabbitmq.client.Channel;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +13,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 
-import static com.iflytek.common.constant.OrderConstant.MQ_ORDER_RELEASE_QUEUE;
+import static com.iflytek.gulimall.common.constant.MqConstant.MQ_ORDER_RELEASE_QUEUE;
+
 
 @Service
 @RabbitListener(queues = {MQ_ORDER_RELEASE_QUEUE})
@@ -21,15 +23,19 @@ public class CloseOrderListener {
 
     @Autowired
     private OrderService orderService;
+    @Autowired
+    MqServiceAPI mqServiceAPI;
 
     @RabbitHandler
-    public void orderReleaseListener(OrderEntity entity, Message message, Channel channel) throws IOException {
-        log.info("*******收到释放订单消息,订单号:{}************", entity.getOrderSn());
+    public void orderReleaseListener(OrderEntityReleaseTO entityTO, Message message, Channel channel) throws IOException {
         long deliveryTag = message.getMessageProperties().getDeliveryTag();
+        String messageId = message.getMessageProperties().getHeader("spring_returned_message_correlation").toString();
         try {
-            orderService.closeOrder(entity);
+            orderService.closeOrder(entityTO);
             channel.basicAck(deliveryTag, false);
+            mqServiceAPI.updateMessageStatus(messageId);
         } catch (Exception e) {
+            e.printStackTrace();
             channel.basicReject(deliveryTag, true);
         }
     }

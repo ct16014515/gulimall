@@ -1,6 +1,9 @@
 package com.iflytek.gulimall.order.vo;
 
-import com.iflytek.common.model.vo.cart.CartItemVO;
+
+
+import com.iflytek.gulimall.common.feign.vo.CartItemVO;
+import com.iflytek.gulimall.common.feign.vo.MemberReceiveAddressVO;
 import lombok.Data;
 
 import java.io.Serializable;

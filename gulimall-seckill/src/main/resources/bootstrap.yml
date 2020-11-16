@@ -4,17 +4,15 @@ spring:
   cloud:
     nacos:
       config:
-        server-addr: 172.31.197.22:18848 #nacos中心地址
-        file-extension: yaml # 配置文件格式
-        namespace: 4cbfefb7-7281-4479-8047-6aff8ab48ac2
-  rabbitmq:
-    host: 172.31.197.22
-    port: 5672
-    virtual-host: /
-    publisher-confirms: true # 开启发送端消息抵达Broker确认
-    publisher-returns: true  # 开启发送端消息抵达Queue确认
-    template:
-      mandatory: true # 只要消息抵达Queue，就会异步发送优先回调returnfirm
-    listener:
-      direct:
-        acknowledge-mode: manual   #手动ack消息，不使用默认的消费端确认
+        server-addr: 192.168.56.10:8848
+        namespace: 93ab9b83-cca4-48b5-abad-8a46f12ac0ba
+        file-extension: yml
+        ext-config:
+          - dataId: redis.yml
+          - dataId: rabbitmq.yml
+      discovery:
+        namespace: 93ab9b83-cca4-48b5-abad-8a46f12ac0ba
+        server-addr: 192.168.56.10:8848
+
+
+  

@@ -1,7 +1,8 @@
 package com.iflytek.gulimall.cart.interceptor;
 
-import com.iflytek.common.model.vo.memeber.MemberVO;
-import com.iflytek.common.utils.CookieUtils;
+import com.iflytek.gulimall.common.feign.vo.MemberVO;
+
+import com.iflytek.gulimall.common.utils.CookieUtils;
 import com.iflytek.gulimall.cart.to.UserInfoTO;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -12,7 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.util.UUID;
 
-import static com.iflytek.common.constant.AutherServerConstant.LOGIN_USER;
+import static com.iflytek.gulimall.common.constant.AutherServerConstant.LOGIN_USER;
 
 public class CartInterceptor implements HandlerInterceptor {
 
