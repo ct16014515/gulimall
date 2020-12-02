@@ -60,8 +60,8 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
     @Override
     public PageUtils queryPage(Map<String, Object> params) {
         QueryWrapper<SkuInfoEntity> skuInfoEntityQueryWrapper = new QueryWrapper<>();
-        if (params.get("skuIds")!=null){
-            List<Long> skuIds= (List<Long>) params.get("skuIds");
+        if (params.get("skuIds") != null) {
+            List<Long> skuIds = (List<Long>) params.get("skuIds");
             skuInfoEntityQueryWrapper.in("skuId", skuIds);
         }
         IPage<SkuInfoEntity> page = this.page(
@@ -113,24 +113,24 @@ public class SkuInfoServiceImpl extends ServiceImpl<SkuInfoDao, SkuInfoEntity> i
         }, executor);
 
 
-        // Long spuId = info.getSpuId();
-        // Long catalogId = info.getCatalogId();
-
         //2、sku的图片信息    pms_sku_images
         CompletableFuture<Void> imageFuture = CompletableFuture.runAsync(() -> {
             List<SkuImagesEntity> imagesEntities = skuImagesService.getImagesBySkuId(skuId);
             skuItemVo.setImages(imagesEntities);
         }, executor);
-
+        //3.查询当前sku是否参与秒杀优惠活动
         CompletableFuture<Void> seckillFuture = CompletableFuture.runAsync(() -> {
-            //3、远程调用查询当前sku是否参与秒杀优惠活动
             ResultBody<SecSessionSkuVO> skuSeckilInfo = seckillFeignService.getSecSessionSkuVOBySkuId(skuId);
             if (skuSeckilInfo.getCode() == 0) {
                 SecSessionSkuVO seckillSkuVo = skuSeckilInfo.getData();
                 skuItemVo.setSecSessionSkuVO(seckillSkuVo);
             }
         }, executor);
-        //等到所有任务都完成
+        //4、查询当前商品的评论列表
+
+
+
+
         CompletableFuture.allOf(saleAttrFuture, descFuture, baseAttrFuture, imageFuture, seckillFuture).get();
         System.out.println("耗时:" + (System.currentTimeMillis() - begin) + "毫秒");
         return skuItemVo;
