@@ -103,7 +103,7 @@ public class SecKillService {
                 //对key进行校验
                 String verifyKey = secSessionSkuVO.getPromotionSessionId() + "_" + secSessionSkuVO.getSkuId();
                 if (verifyKey.equals(key)) {
-                    //验证这个人是否已经买过了（幂等性处理）,如果秒杀成功，就去占位。返回值为是否占位成功userId-key
+                    //验证这个人是否已经买过了（幂等性处理）,如果秒杀成功,就去占位。返回值为是否占位成功userId-key
                     Boolean isBuy = redisTemplate.opsForValue().setIfAbsent(memberVO.getUserId() + "_" + key, number.toString(), ttl, TimeUnit.MILLISECONDS);
                     if (isBuy != null && isBuy) {
                         //数量扣减,使用信号量快速扣减

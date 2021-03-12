@@ -36,14 +36,12 @@ public class MemberReceiveAddressServiceImpl extends ServiceImpl<MemberReceiveAd
     @Override
     public List<MemberReceiveAddressVO> getMemberReceiveAddressByUid(Long uid) {
         List<MemberReceiveAddressEntity> memberReceiveAddressEntityList = this.baseMapper.getMemberReceiveAddressByUid(uid);
-        List<MemberReceiveAddressVO> collect = memberReceiveAddressEntityList.stream().map(item -> {
+        return memberReceiveAddressEntityList.stream().map(item -> {
             MemberReceiveAddressVO memberReceiveAddressVO = new MemberReceiveAddressVO();
             BeanUtils.copyProperties(item, memberReceiveAddressVO);
             return memberReceiveAddressVO;
         }).collect(Collectors.toList());
 
-
-        return collect;
     }
 
 }

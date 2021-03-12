@@ -3,10 +3,15 @@ package com.iflytek.gulimall.seckill;
 import com.iflytek.gulimall.seckill.vo.OrderVO;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
+import org.redisson.api.RLock;
+import org.redisson.api.RedissonClient;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 @SpringBootTest
 @Slf4j
@@ -17,6 +22,9 @@ class GulimallSeckillApplicationTests {
 
     @Autowired
     private AmqpAdmin amqpAdmin;
+
+
+
 
     @Test
     public void sendMessage() {
@@ -71,6 +79,7 @@ class GulimallSeckillApplicationTests {
         amqpAdmin.declareBinding(binding);
         log.info("创建成功绑定");
     }
+
 
 
 }

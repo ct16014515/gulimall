@@ -44,7 +44,6 @@ public class RabbitTemplateService {
         Object object = sendMessageRequest.getObject();
         String content = JSON.toJSONString(object);
         mqMessage.setContent(content);
-        //springmvc会自动将object类转为map,需要重新转为对象
         if (!StringUtils.isEmpty(className)){
             Class<?> clazz = Class.forName(className);
             object= JSON.parseObject(content, clazz);
@@ -53,7 +52,6 @@ public class RabbitTemplateService {
         mqMessage.setRoutingKey(sendMessageRequest.getRoutingKey());
         mqMessage.setCreateTime(LocalDateTime.now());
         mqMessage.setUpdateTime(LocalDateTime.now());
-
         try {
             mqMessage.setMessageStatus(MqMessageEnum.CREATE_NEW.getCode());
             rabbitTemplate.convertAndSend(sendMessageRequest.getExchange(), sendMessageRequest.getRoutingKey(), object, correlationData);
@@ -63,18 +61,6 @@ public class RabbitTemplateService {
         mqMessageDao.insert(mqMessage);
     }
 
-    public void sendMessage(String exchange,
-                            String routingKey,
-                            Object object,
-                            String messageId) throws ClassNotFoundException {
-        /**
-         * String exchange, String routingKey, final Object object,
-         * @Nullable CorrelationData correlationData
-         */
-        CorrelationData correlationData = new CorrelationData(messageId);
-        rabbitTemplate.convertAndSend(exchange, routingKey, object, correlationData);
-
-    }
 
 
     public void updateMessageStatus(String messageId) {

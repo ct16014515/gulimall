@@ -41,8 +41,7 @@ public class MqConfig {
                 while (true) {
                     Optional<MqMessage> optional = mqMessageDao.findById(messageId);
                     if (optional.isPresent()) {
-                        MqMessage mqMessage = null;
-                        try {
+                            MqMessage mqMessage = optional.get();
                             mqMessage = optional.get();
                             mqMessage.setMessageStatus(2);
                             mqMessage.setUpdateTime(LocalDateTime.now());
@@ -51,15 +50,7 @@ public class MqConfig {
                             log.info("消息没有抵达队列----->messageId:{},mongo数据库保存的mqMessage:{}", messageId, mqMessage);
                             mqMessageDao.save(mqMessage);
                             break;
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            try {
-                                Thread.sleep(2000);
-                            } catch (InterruptedException ex) {
-                                ex.printStackTrace();
-                            }
 
-                        }
                     }
 
                 }

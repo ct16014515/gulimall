@@ -157,7 +157,6 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
         SendMessageRequest messageRequest = SendMessageRequest.builder().className(wareStockDelayTO.getClass().getName()).
                 routingKey(MQ_STOCK_LOCKED_ROUTINGKEY).object(wareStockDelayTO).exchange(MQ_WARE_EXCHANGE).build();
         mqServiceAPI.sendMessage(messageRequest);
-        // rabbitTemplate.convertAndSend(MQ_WARE_EXCHANGE, MQ_STOCK_LOCKED_ROUTINGKEY, wareStockDelayTO);
         return new ResultBody();
     }
 
@@ -245,14 +244,10 @@ public class WareSkuServiceImpl extends ServiceImpl<WareSkuDao, WareSkuEntity> i
                                 wareSkuDao.updateById(updateWareSkuEntity);
                             });
                         }
-
-
                     }
                 }
             }
         }
-
-
     }
 
     /**

@@ -14,4 +14,12 @@ spring:
       discovery:
         namespace: 93ab9b83-cca4-48b5-abad-8a46f12ac0ba
         server-addr: 192.168.56.10:8848
+anhui12345:
+  connection:
+    url: jdbc:mysql://192.168.56.10:3306/anhui12345?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
+    username: root
+    password: root
+jdbc:
+  driverClassName: com.mysql.cj.jdbc.Driver
+
 

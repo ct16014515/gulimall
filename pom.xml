@@ -53,6 +53,8 @@
         <elasticsearch.version>7.4.2</elasticsearch.version>
         <hutool.version>5.3.1</hutool.version>
         <weixin-java.version>3.9.0</weixin-java.version>
+        <spring.redis.version>2.3.0.RELEASE</spring.redis.version>
+        <jedis.version>3.3.0</jedis.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -108,12 +110,6 @@
                 <artifactId>spring-session-data-redis</artifactId>
                 <version>${spring-data-session}</version>
             </dependency>
-            <!--如果redis需要配置连接池,则引入此依赖,整合包为啥不统一呢-->
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-pool2</artifactId>
-                <version>${commons-pool2.version}</version>
-            </dependency>
             <!-- 以后使用Redisson作为所有分布式锁 -->
             <dependency>
                 <groupId>org.redisson</groupId>
@@ -164,6 +160,40 @@
                 <groupId>com.github.binarywang</groupId>
                 <artifactId>weixin-java-pay</artifactId>
                 <version>${weixin-java.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-data-redis</artifactId>
+                <version>${spring.redis.version}</version>
+                <!-- 1.5的版本默认采用的连接池技术是jedis  2.0以上版本默认连接池是lettuce, 在这里采用jedis，所以需要排除lettuce的jar -->
+                <exclusions>
+                    <exclusion>
+                        <groupId>redis.clients</groupId>
+                        <artifactId>jedis</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>io.lettuce</groupId>
+                        <artifactId>lettuce-core</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <!-- 添加jedis客户端 -->
+            <dependency>
+                <groupId>redis.clients</groupId>
+                <artifactId>jedis</artifactId>
+                <version>${jedis.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <artifactId>commons-pool2</artifactId>
+                        <groupId>org.apache.commons</groupId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <!--如果redis需要配置jedis客户端,则引入此依赖-->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-pool2</artifactId>
+                <version>${commons-pool2.version}</version>
             </dependency>
         </dependencies>
 

@@ -22,7 +22,7 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-//@Configuration
+@Configuration
 public class RequestAttributeHystrixConcurrencyStrategy extends HystrixConcurrencyStrategy {
     private static final Log log = LogFactory.getLog(RequestAttributeHystrixConcurrencyStrategy.class);
 

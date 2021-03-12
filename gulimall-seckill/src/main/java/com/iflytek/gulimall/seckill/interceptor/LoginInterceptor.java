@@ -24,7 +24,7 @@ public class LoginInterceptor implements HandlerInterceptor {
         String requestURI = request.getRequestURI();
         AntPathMatcher antPathMatcher = new AntPathMatcher();
         if (antPathMatcher.match("/seckill/getSecSessionSkuVOBySkuId/**", requestURI) ||
-                antPathMatcher.match("/seckill/getCurrentSecSessionSkuVOS", requestURI)) {
+                antPathMatcher.match("/seckill/getCurrentSecSessionSkuVOS", requestURI) ) {
             return true;
         }
         Object attribute = request.getSession().getAttribute(LOGIN_USER);

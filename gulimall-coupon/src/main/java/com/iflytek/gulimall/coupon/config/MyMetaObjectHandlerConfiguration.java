@@ -20,6 +20,5 @@ public class MyMetaObjectHandlerConfiguration implements MetaObjectHandler {
     @Override
     public void updateFill(MetaObject metaObject) {
         this.setFieldValByName(Entity.UPDATE_TIME, LocalDateTime.now(), metaObject);
-
     }
 }

@@ -91,10 +91,6 @@ public class LoginController {
         return resultBody;
     }
 
-    public static void main(String[] args) {
-        String s = (Math.random() + "").substring(2, 8);
-        System.out.println(s);
-    }
 
     /**
      * 用户注册
@@ -145,63 +141,6 @@ public class LoginController {
     }
 
 
-//    /**
-//     * @param userLoginVO
-//     * @return
-//     */
-//    @PostMapping("/login")
-//    public String userLogin(@Valid UserLoginVO userLoginVO,
-//                            BindingResult result,
-//                            HttpServletRequest request,
-//                            HttpServletResponse response,
-//                            RedirectAttributes redirectAttributes) {
-//        log.info("请求参数" + userLoginVO);
-//
-//
-//        if (result.hasErrors()) {
-//            Map<String, String> errors = ValidationUtils.validationErrors(result);
-//            redirectAttributes.addFlashAttribute("errors", errors);
-//            return "redirect:http://auth.gulimall.com/login.html";
-//        }
-//        ResultBody<MemberVO> memberVOResultBody = memberService.memberLogin(userLoginVO);
-//        if (0 == memberVOResultBody.getCode()) {
-//            MemberVO memberVO = memberVOResultBody.getData();
-//            //将用户名和密码放入载荷
-//            Map<String, Object> map = new HashMap<>();
-//            map.put("username", memberVO.getUsername());
-//            map.put("userId", memberVO.getUserId());
-//            //防止jwt被盗取,增加ip限制
-//            String ip = HttpUtils.getIpAddress(request);
-//            map.put("ip", ip);
-//            String jwtToken = JwtUtils.generateToken(map, jwtConfig.getPrivateKey(), jwtConfig.getExpire());
-//            //jwt写入cookie只读属性
-//            CookieUtils.setCookie(request,
-//                    response,
-//                    jwtConfig.getJwtCookieName(),
-//                    jwtToken,
-//                    jwtConfig.getExpire(),
-//                    "utf-8",
-//                    true);
-//            //用户姓名写入cookie
-//            CookieUtils.setCookie(request, response, jwtConfig.getUnick(), memberVO.getUsername(), jwtConfig.getExpire() * 60);
-//            if (StringUtils.isEmpty(userLoginVO.getReturnUrl())) {
-//                Map<String, String> success = new HashMap<>();
-//                success.put("msg", "登录成功");
-//                redirectAttributes.addFlashAttribute("errors", success);
-//                return "redirect:http://auth.gulimall.com/login.html";
-//            } else {
-//                return "redirect:" + userLoginVO.getReturnUrl();
-//            }
-//        } else {
-//
-//            String msg = memberVOResultBody.getMsg();
-//            Map<String, String> errors = new HashMap<>();
-//            errors.put("msg", msg);
-//            redirectAttributes.addFlashAttribute("errors", errors);
-//            return "redirect:http://auth.gulimall.com/login.html";
-//        }
-//    }
-
 
     /**
      * @param userLoginVO
@@ -218,7 +157,6 @@ public class LoginController {
         String redirectLogin = "";
         if (!StringUtils.isEmpty(userLoginVO.getReturnUrl())) {
             String encodeReturnUrl = URLEncoder.encode(userLoginVO.getReturnUrl(), "utf-8");
-            System.out.println("回调地址为:"+encodeReturnUrl);
             redirectLogin = "redirect:" + URL_LOGIN + "?returnUrl=" + encodeReturnUrl;
         }else {
             redirectLogin = "redirect:" + URL_LOGIN ;

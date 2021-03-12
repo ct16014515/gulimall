@@ -525,32 +525,10 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
             // int i=2/0;
             //定时关单功能,创建订单后,发送消息给延时队列(1分钟),1分钟内用户未支付,1分钟后,延时队列给释放库存队列
             // 消息经过订单释放队列给消费者,消费者拿到消息判断是未付款的订单,将订单改成已取消状态
-//            String timeId = IdWorker.getTimeId();
-//            CorrelationData correlationData = new CorrelationData(timeId);
-//            MqMessage1 mqMessage1 = new MqMessage1();
-//            mqMessage1.setMessageId(timeId);
-//            mqMessage1.setContent(JSON.toJSONString(orderEntity));
-//            String name = orderEntity.getClass().getName();
-//            mqMessage1.setClassType(name);
-//            mqMessage1.setToExchange(MQ_ORDER_EXCHANGE);
-//            mqMessage1.setRoutingKey(MQ_ORDER_CREATE_ROUTINGKEY);
-//            mqMessage1.setCreateTime(new Date());
-//            mqMessage1.setUpdateTime(new Date());
-//            try {
-//                mqMessage1.setMessageStatus(1);
-//                rabbitTemplate.convertAndSend(MQ_ORDER_EXCHANGE, MQ_ORDER_CREATE_ROUTINGKEY, orderEntity, correlationData);
-//            } catch (Exception e) {
-//                mqMessage1.setMessageStatus(2);
-//            } finally {
-//                log.info("messageId为:{}",timeId);
-//                mqMessage1Dao.insert(mqMessage1);
-//            }
             OrderEntityReleaseTO orderEntityReleaseTO = new OrderEntityReleaseTO();
             BeanUtils.copyProperties(orderEntity, orderEntityReleaseTO);
-
             SendMessageRequest sendMessageRequest = SendMessageRequest.builder().exchange(MQ_ORDER_EXCHANGE).routingKey(MQ_ORDER_CREATE_ROUTINGKEY)
                     .object(orderEntityReleaseTO).className(orderEntityReleaseTO.getClass().getName()).build();
-
             mqServiceAPI.sendMessage(sendMessageRequest);
         } else {
             throw new RRException("库存不足", 3);

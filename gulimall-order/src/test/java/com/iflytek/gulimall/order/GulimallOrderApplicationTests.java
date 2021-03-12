@@ -1,5 +1,6 @@
 package com.iflytek.gulimall.order;
 
+
 import com.iflytek.gulimall.order.config.AlipayTemplate;
 import com.iflytek.gulimall.order.entity.OrderEntity;
 import org.junit.jupiter.api.Test;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
 import java.util.Map;
 
 @SpringBootTest
@@ -20,6 +22,7 @@ class GulimallOrderApplicationTests {
     AmqpAdmin amqpAdmin;
     @Autowired
     private RabbitTemplate rabbitTemplate;
+
 
 
     @Test
@@ -81,5 +84,10 @@ class GulimallOrderApplicationTests {
     public void queryOrder(){
         alipayTemplate.queryOrder("1315585490858061826");
     }
+
+
+
+
+
 
 }
