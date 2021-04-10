@@ -1,6 +1,7 @@
 package com.iflytek.gulimall.product;
 
 import com.aliyun.oss.OSS;
+import com.iflytek.gulimall.product.core.OrderDao;
 import com.iflytek.gulimall.product.entity.BrandEntity;
 import com.iflytek.gulimall.product.service.BrandService;
 import com.iflytek.gulimall.product.service.impl.SkuInfoServiceImpl;
@@ -26,6 +27,9 @@ class GulimallProductApplicationTests {
     @Autowired
     private SkuInfoServiceImpl  skuInfoService;
 
+    @Autowired
+    OrderDao orderDao;
+
     @Test
     public void testUpload() throws FileNotFoundException {
         ossClient.putObject("rclin", "aldi.jpg", new FileInputStream("C:\\Users\\rclin\\Desktop\\e22e59c17757255682dc1699d2bbbb0e_259_194.jpg"));
@@ -44,12 +48,13 @@ class GulimallProductApplicationTests {
         SkuItemVo skuItem1 = skuInfoService.getSkuItem(17L);
     }
 
-    @Autowired
-    RestTemplate restTemplate;
+
+
+
 
     @Test
-    public void testRestTemplate() {
-        Map forObject = restTemplate.getForObject("http://gulimall.com/", Map.class);
+   public void orderTest(){
+        orderDao.update();
     }
 
 

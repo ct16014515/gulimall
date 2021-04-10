@@ -19,7 +19,6 @@ anhui12345:
     url: jdbc:mysql://192.168.56.10:3306/anhui12345?useUnicode=true&characterEncoding=UTF-8&serverTimezone=Asia/Shanghai
     username: root
     password: root
-jdbc:
-  driverClassName: com.mysql.cj.jdbc.Driver
+    jdbcdriverClassName: com.mysql.cj.jdbc.Driver
 
 

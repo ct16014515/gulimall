@@ -36,8 +36,8 @@ public class WareSkuController implements WareServiceAPI {
     @PostMapping("/hasStock")
     public R hasStock(@RequestBody List<Long> skuIds) {
         List<WareHasStockVO> list = wareSkuService.hasStock(skuIds);
-        R r = R.ok().setData(list);
-        return r;
+        return R.ok().setData(list);
+
     }
 
     @GetMapping("/hasStock/{skuId}")

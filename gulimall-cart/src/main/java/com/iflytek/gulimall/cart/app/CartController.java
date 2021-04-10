@@ -13,15 +13,13 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/cart")
-public class CartController  implements CartServiceAPI {
+public class CartController implements CartServiceAPI {
     @Autowired
-   private CartService cartService;
+    private CartService cartService;
 
     @GetMapping("/getCartListByUid")
     public ResultBody<List<CartItemVO>> getCartListByUid(@RequestParam("uid") String uid) {
-        //ResultBody<List<CartItemVO>> resultBody = cartService.getCartListByUid(uid);
-        ResultBody<List<CartItemVO>> resultBody = cartService.getCartList();
-        return resultBody;
+        return cartService.getCartList();
     }
 
 }

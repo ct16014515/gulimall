@@ -51,44 +51,25 @@ public class LoginController {
     @ResponseBody
     public ResultBody sendMsg(@RequestParam("phone") String phone, HttpServletRequest request) throws InterruptedException {
         //一个手机号在60s内只能发送一次
-//        String value = redisTemplate.opsForValue().get(AutherServerConstant.SMS_CODE_CACHE_PREFIX + phone);
-//        if (!StringUtils.isEmpty(value)) {
-//            //判断时间是否小于60秒
-//            long begin = Long.parseLong(value.split("_")[1]);
-//            long end = System.currentTimeMillis();
-//            if (end - begin <60000) {
-//                return new ResultBody(10001, "发送频繁", null);
-//            }
-//        }
-
-//        RLock phoneLock = redissonClient.getLock(AutherServerConstant.REDISSON_LOCK_PREFIX + "phone:" + phone);
-//        /**
-//         *waitTime 用此时间查看是否有锁,如果太长会导致线程等待
-//         *leaseTime 上锁时间,即此时间过了之后会释放锁,redis此条无记录
-//         */
-//        boolean b = phoneLock.tryLock(100, 60000L, TimeUnit.MILLISECONDS);
-//        if (!b) {
-//            return new ResultBody(10001, "发送频繁", null);
-//        }
-        /**
-         *waitTime 用此时间查看是否有锁,如果太长会导致线程等待
-         *leaseTime 上锁时间,即此时间过了之后会释放锁,redis此条无记录
-         */
-        String ipAddress = HttpUtils.getIpAddress(request);
-        RLock ipLock = redissonClient.getLock(AutherServerConstant.REDISSON_LOCK_PREFIX + "ip:" + ipAddress);
-        //对ip进行防刷,防止同一ip发送不同请求
-        boolean ipflag = ipLock.tryLock(100, 60000L, TimeUnit.MILLISECONDS);
-        if (!ipflag) {
-            return new ResultBody(10001, "发送频繁", null);
+        String value = redisTemplate.opsForValue().get(AutherServerConstant.SMS_CODE_CACHE_PREFIX + phone);
+        if (!StringUtils.isEmpty(value)) {
+            //判断时间是否小于60秒
+            long begin = Long.parseLong(value.split("_")[1]);
+            long end = System.currentTimeMillis();
+            if (end - begin < 60000) {
+                return new ResultBody<>(10001, "发送频繁", null);
+            }
         }
-        String code = (Math.random() + "").substring(2, 8);
-        redisTemplate.opsForValue().set(
-                AutherServerConstant.SMS_CODE_CACHE_PREFIX + phone,
-                code,
-                20,
-                TimeUnit.MINUTES);
-        ResultBody resultBody = thirdPartyServiceAPI.sendMsg(phone, code);
-        return resultBody;
+        //2、验证码的 redis.存key-phone,value-code再次效验
+        int code = (int) ((Math.random() * 9 + 1) * 100000);
+        String codeNum = String.valueOf(code);
+        String redisStorage = codeNum + "_" + System.currentTimeMillis();
+        //存入redis，防止同一个手机号在60秒内再次发送验证码
+        redisTemplate.opsForValue().set(AutherServerConstant.SMS_CODE_CACHE_PREFIX + phone,
+                redisStorage, 10, TimeUnit.MINUTES);
+
+        thirdPartyServiceAPI.sendMsg(phone, codeNum);
+        return new ResultBody();
     }
 
 
@@ -141,12 +122,10 @@ public class LoginController {
     }
 
 
-
     /**
-     * @param userLoginVO
-     * 1在搜索页面跳转至登录页面时,由于returnurl包含中文,js需要编码,防止重定向到returnurl出现中文乱码问题.
-     * 2在搜索页面跳转至登录页面,springmvc会自动把参数解码,如果前端js参数编码了,后台解码,会导致新的参数returnUrl解码,
-     *   当登录失败时,重定到登录页的returnUrl是处于解码状态,再次登录成功出现中文乱码.
+     * @param userLoginVO 1在搜索页面跳转至登录页面时,由于returnurl包含中文,js需要编码,防止重定向到returnurl出现中文乱码问题.
+     *                    2在搜索页面跳转至登录页面,springmvc会自动把参数解码,如果前端js参数编码了,后台解码,会导致新的参数returnUrl解码,
+     *                    当登录失败时,重定到登录页的returnUrl是处于解码状态,再次登录成功出现中文乱码.
      * @return
      */
     @PostMapping("/login")
@@ -158,8 +137,8 @@ public class LoginController {
         if (!StringUtils.isEmpty(userLoginVO.getReturnUrl())) {
             String encodeReturnUrl = URLEncoder.encode(userLoginVO.getReturnUrl(), "utf-8");
             redirectLogin = "redirect:" + URL_LOGIN + "?returnUrl=" + encodeReturnUrl;
-        }else {
-            redirectLogin = "redirect:" + URL_LOGIN ;
+        } else {
+            redirectLogin = "redirect:" + URL_LOGIN;
         }
         if (result.hasErrors()) {
             Map<String, String> errors = ValidationUtils.validationErrors(result);
@@ -192,10 +171,10 @@ public class LoginController {
     }
 
     @GetMapping("logout.html")
-    public String logout(@RequestParam(value = "returnUrl",required = false) String returnUrl, HttpSession session) {
+    public String logout(@RequestParam(value = "returnUrl", required = false) String returnUrl, HttpSession session) {
         session.removeAttribute(LOGIN_USER);
-        if (StringUtils.isEmpty(returnUrl)){
-            returnUrl=URL_PORTAL;
+        if (StringUtils.isEmpty(returnUrl)) {
+            returnUrl = URL_PORTAL;
         }
         return "redirect:" + returnUrl;
     }

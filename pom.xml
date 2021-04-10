@@ -29,6 +29,7 @@
         <module>gulimall-auther-server</module>
         <module>gulimall-cart</module>
         <module>gulimall-mq</module>
+        <module>test-redislistener</module>
     </modules>
     <properties>
         <java.version>1.8</java.version>

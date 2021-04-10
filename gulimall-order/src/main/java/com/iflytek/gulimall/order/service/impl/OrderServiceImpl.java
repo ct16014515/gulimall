@@ -53,7 +53,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static com.iflytek.gulimall.common.constant.CouponConstant.*;
 import static com.iflytek.gulimall.common.constant.MqConstant.*;
 import static com.iflytek.gulimall.common.constant.OrderConstant.ORDER_TOKEN_REDIS_PREFIX;
 
@@ -107,7 +106,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     @Override
     public OrderConfirmVO toTrade() throws ExecutionException, InterruptedException {
         OrderConfirmVO orderConfirmVO = new OrderConfirmVO();
-        MemberVO memberVO = LoginInterceptor.toThreadLocal.get();
+        MemberVO memberVO = LoginInterceptor.getMemberVO();
         Long userId = memberVO.getUserId();
         RequestAttributes requestAttributes = RequestContextHolder.getRequestAttributes();
         /**
@@ -231,7 +230,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
     @Transactional
     public OrderSubmitResposeVO submitOrder(OrderSubmitVO orderSubmitVO) {
         OrderSubmitResposeVO orderSubmitResposeVO = new OrderSubmitResposeVO();
-        MemberVO memberVO = LoginInterceptor.toThreadLocal.get();
+        MemberVO memberVO = LoginInterceptor.getMemberVO();
         String orderToken = orderSubmitVO.getOrderToken();
         /**
          *使用lua脚本,保证令牌比较和删除令牌是原子性操作,结果只能是Long, Boolean, List
@@ -374,7 +373,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
 
     @Override
     public PageUtils orderWithOrderItemList(Map<String, Object> params) {
-        MemberVO memberVO = LoginInterceptor.toThreadLocal.get();
+        MemberVO memberVO = LoginInterceptor.getMemberVO();
         IPage<OrderEntity> page = page(
                 new Query<OrderEntity>().getPage(params),
                 new QueryWrapper<OrderEntity>().eq("member_id", memberVO.getUserId()).
@@ -605,7 +604,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
      * @return
      */
     private List<OrderItemEntity> createOrderItemEntities(String orderSn) {
-        MemberVO memberVO = LoginInterceptor.toThreadLocal.get();
+        MemberVO memberVO = LoginInterceptor.getMemberVO();
         ResultBody<List<CartItemVO>> listByUid = cartServiceApi.getCartListByUid(String.valueOf(memberVO.getUserId()));
         List<CartItemVO> itemVOList = listByUid.getData();
         Map<Long, Integer> skuCountMap = itemVOList.stream().collect(Collectors.toMap(CartItemVO::getSkuId, CartItemVO::getSkuCount));
@@ -645,7 +644,7 @@ public class OrderServiceImpl extends ServiceImpl<OrderDao, OrderEntity> impleme
      * @return
      */
     private OrderEntity createOrderEntity(OrderSubmitVO orderSubmitVO, String orderSn) {
-        MemberVO memberVO = LoginInterceptor.toThreadLocal.get();
+        MemberVO memberVO = LoginInterceptor.getMemberVO();
         OrderEntity orderEntity = new OrderEntity();
         orderEntity.setOrderSn(orderSn);//订单号
         orderEntity.setMemberId(memberVO.getUserId());

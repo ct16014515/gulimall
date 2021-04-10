@@ -66,9 +66,9 @@ alipay:
   gatewayUrl: https://openapi.alipaydev.com/gateway.do
 #微信支付
 wx:
-  appId: wxd898fcb01713c658
-  mchId: 1483469312
-  mchKey: 098F6BCD4621D373CADE4E832627B4F6
+  appId: wx8397f8696b538317
+  mchId: 1473426802
+  mchKey: T6m9iK73b0kn9g5v426MKfHQH7X8rKwb
   notifyUrl: http://t3fcjk.natappfree.cc/order/wxPayNotifyUrl
   returnUrl: http://member.gulimall.com/myOrderList.html
 

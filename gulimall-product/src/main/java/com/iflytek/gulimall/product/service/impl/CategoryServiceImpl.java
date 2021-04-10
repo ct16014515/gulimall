@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
 import com.iflytek.gulimall.product.vo.Catalog2Vo;
 import com.iflytek.gulimall.product.vo.Catalog3Vo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -28,6 +29,7 @@ import org.springframework.util.StringUtils;
 
 
 @Service("categoryService")
+@Slf4j(topic ="CategoryServiceImpl" )
 public class CategoryServiceImpl extends ServiceImpl<CategoryDao, CategoryEntity> implements CategoryService {
 
 

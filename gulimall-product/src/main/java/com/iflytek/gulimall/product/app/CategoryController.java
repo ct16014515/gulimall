@@ -5,12 +5,11 @@ import java.util.List;
 import java.util.Map;
 
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.iflytek.gulimall.product.entity.CategoryEntity;
 import com.iflytek.gulimall.product.service.CategoryService;
@@ -27,6 +26,8 @@ import com.iflytek.gulimall.common.utils.R;
  */
 @RestController
 @RequestMapping("product/category")
+@Slf4j(topic = "CategoryController")
+@Api(value = "商品分类模块", tags = "商品分类模块")
 public class CategoryController {
     @Autowired
     private CategoryService categoryService;
@@ -34,7 +35,8 @@ public class CategoryController {
     /**
      * 列表tree
      */
-    @RequestMapping("/list/tree")
+    @PostMapping("/list/tree")
+    @ApiOperation(value = "分类列表")
     public R list(@RequestParam Map<String, Object> params){
         List<CategoryEntity>list = categoryService.listWithTree();
         return R.ok().put("data", list);

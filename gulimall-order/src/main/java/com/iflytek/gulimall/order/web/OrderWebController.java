@@ -61,7 +61,7 @@ public class OrderWebController {
     //在订单支付页面试可以刷新页面的,在提交订单之后,重定向到订单支付页
     @GetMapping("/payDetail.html")
     public String payDetailHtml(@RequestParam("orderSn") String  orderSn, Model model) {
-        MemberVO memberVO = LoginInterceptor.toThreadLocal.get();
+        MemberVO memberVO = LoginInterceptor.getMemberVO();
         OrderEntity orderEntity = orderService.getOrderEntityByOrderSnAndUserId(orderSn, memberVO.getUserId());
         model.addAttribute("orderEntity", orderEntity);
         return "pay";
