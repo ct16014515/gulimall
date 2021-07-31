@@ -33,5 +33,7 @@ public interface SkuInfoService extends IService<SkuInfoEntity> {
     ResultBody<List<SkuInfoPriceVO>> getSkuPriceBySkuIds(List<Long> skuIds);
 
     List<OrderItemVO> getOrderItemsBySkuIds(List<Long> skuIds);
+
+    void saveSkuInfo(SkuInfoEntity skuInfoEntity);
 }
 

@@ -23,10 +23,22 @@ spring:
               - Path=/api/coupon/**
           filters:
               - RewritePath=/api/(?<segment>/?.*), /$\{segment}
-        - id: coupon_route
+        - id: order_route
           uri: lb://gulimall-order
           predicates:
               - Path=/api/order/**
+          filters:
+              - RewritePath=/api/(?<segment>/?.*), /$\{segment}
+        - id: member_route
+          uri: lb://gulimall-member
+          predicates:
+              - Path=/api/member/**
+          filters:
+              - RewritePath=/api/(?<segment>/?.*), /$\{segment}
+        - id: ware_route
+          uri: lb://gulimall-ware
+          predicates:
+              - Path=/api/ware/**
           filters:
               - RewritePath=/api/(?<segment>/?.*), /$\{segment}
         #配置后台路由

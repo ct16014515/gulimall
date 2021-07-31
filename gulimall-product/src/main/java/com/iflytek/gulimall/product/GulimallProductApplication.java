@@ -1,7 +1,6 @@
 package com.iflytek.gulimall.product;
 
 import com.iflytek.gulimall.product.config.SpringContextHolder;
-import com.iflytek.gulimall.product.config.DataSourceProxyAutoConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
@@ -23,9 +22,8 @@ import java.net.UnknownHostException;
 @EnableDiscoveryClient
 @EnableFeignClients(basePackages = {"com.iflytek.gulimall.common.feign"})
 @EnableRedisHttpSession
-@Import({DataSourceProxyAutoConfiguration.class})
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class},
-        scanBasePackages = {"com.iflytek.gulimall.common.feign", "com.iflytek.gulimall.product"})
+        scanBasePackages = {"com.iflytek.gulimall.common", "com.iflytek.gulimall.product"})
 @Slf4j
 public class GulimallProductApplication {
     public static void main(String[] args) throws UnknownHostException {

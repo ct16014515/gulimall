@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.iflytek.gulimall.common.utils.PageUtils;
 import com.iflytek.gulimall.product.entity.AttrEntity;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -16,5 +17,11 @@ import java.util.Map;
 public interface AttrService extends IService<AttrEntity> {
 
     PageUtils queryPage(Map<String, Object> params);
+
+    PageUtils queryBaseAttrPage(Map<String, Object> params, Long catelogId, String attrType);
+
+    PageUtils getNoRelationAttr(Map<String, Object> params, Long attrgroupId);
+
+    List<AttrEntity> getRelationAttr(Long attrGroupId);
 }
 

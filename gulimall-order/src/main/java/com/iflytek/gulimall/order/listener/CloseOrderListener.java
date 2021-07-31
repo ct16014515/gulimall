@@ -36,7 +36,7 @@ public class CloseOrderListener {
             mqServiceAPI.updateMessageStatus(messageId);
         } catch (Exception e) {
             e.printStackTrace();
-            channel.basicReject(deliveryTag, true);
+            channel.basicReject(deliveryTag, false);
         }
     }
 

@@ -485,7 +485,7 @@ public class MallSearchService {
          */
         if (!StringUtils.isEmpty(param.getKeyword())) {
             HighlightBuilder highlightBuilder = new HighlightBuilder();
-            highlightBuilder.preTags("<b 'style=color: red'>");
+            highlightBuilder.preTags("<b style=color:red>");
             highlightBuilder.postTags("</b>");
             highlightBuilder.field("skuTitle");
             sourceBuilder.highlighter(highlightBuilder);

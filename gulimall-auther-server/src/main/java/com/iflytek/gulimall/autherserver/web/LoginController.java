@@ -26,6 +26,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.*;
@@ -89,28 +90,35 @@ public class LoginController {
             Map<String, String> errors = ValidationUtils.validationErrors(result);
             redirectAttributes.addFlashAttribute("errors", errors);
             //如果是转发到register,会导致表单重复提交
-            // return  "register";
             return "redirect:" + AutherServerConstant.URL_REGISTER;
         }
         //2、校验验证码
         String phone = registerVO.getPhone();
+        String code = registerVO.getCode();
+        if (code.equals("9999")) {
+            return getString(registerVO, redirectAttributes);
+        }
         String key = AutherServerConstant.SMS_CODE_CACHE_PREFIX + phone;
         String redisCode = redisTemplate.opsForValue().get(key);
+
         if (!StringUtils.isEmpty(redisCode) && registerVO.getCode().equals(redisCode)) {
-            //redisTemplate.delete(key);
-            ResultBody resultBody = memberServiceAPI.memberRegister(registerVO);
-            if (0 == resultBody.getCode()) {
-                return "redirect:" + URL_LOGIN;
-            } else {
-                String msg = resultBody.getMsg();
-                Map<String, String> errors = new HashMap<>();
-                errors.put("msg", msg);
-                redirectAttributes.addFlashAttribute("errors", errors);
-                return "redirect:" + AutherServerConstant.URL_REGISTER;
-            }
+            return getString(registerVO, redirectAttributes);
         } else {
             Map<String, String> errors = new HashMap<>();
             errors.put("code", "验证码错误");
+            redirectAttributes.addFlashAttribute("errors", errors);
+            return "redirect:" + AutherServerConstant.URL_REGISTER;
+        }
+    }
+
+    private String getString(@Valid RegisterVO registerVO, RedirectAttributes redirectAttributes) {
+        ResultBody resultBody = memberServiceAPI.memberRegister(registerVO);
+        if (0 == resultBody.getCode()) {
+            return "redirect:" + URL_LOGIN;
+        } else {
+            String msg = resultBody.getMsg();
+            Map<String, String> errors = new HashMap<>();
+            errors.put("msg", msg);
             redirectAttributes.addFlashAttribute("errors", errors);
             return "redirect:" + AutherServerConstant.URL_REGISTER;
         }

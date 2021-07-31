@@ -45,7 +45,7 @@ public class CouponListener {
             channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
         } catch (Exception e) {
             e.printStackTrace();
-            channel.basicReject(message.getMessageProperties().getDeliveryTag(), true);
+            channel.basicReject(message.getMessageProperties().getDeliveryTag(), false);
         }
     }
 }

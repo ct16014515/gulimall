@@ -1219,14 +1219,14 @@
                                         <img th:src="${skuModel.getSkuImg()}"></a></li>
                                 </ul>
                                 <p class="tab_R">
-                                    <span th:text="'¥ '+${skuModel.skuPrice}+'.00'">¥5199.00</span>
+                                    <span>¥ [[${skuModel.skuPrice}]]</span>
 
                                 </p>
                                 <p class="tab_JE">
                                     <a th:href="|http://item.gulimall.com/${skuModel.getSkuId()}.html|"
                                        th:title="${skuModel.skuTitle}"
                                        th:utext="${skuModel.skuTitle}">
-
+                                        <span></span>
                                     </a>
                                 </p>
                                 <p class="tab_PI">已有<span>11万+</span>热门评价

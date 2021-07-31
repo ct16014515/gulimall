@@ -3,6 +3,7 @@ package com.iflytek.gulimall.product.service;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.iflytek.gulimall.common.utils.PageUtils;
 import com.iflytek.gulimall.product.entity.AttrGroupEntity;
+import com.iflytek.gulimall.product.vo.AttrGroupWithAttrsVo;
 import com.iflytek.gulimall.product.vo.SpuItemAttrGroupVo;
 
 import java.util.List;
@@ -28,5 +29,7 @@ public interface AttrGroupService extends IService<AttrGroupEntity> {
     List<SpuItemAttrGroupVo> getAttrGroupWithAttrsBySpuId(Long spuId, Long catalogId);
 
     List<AttrGroupEntity> getListByAttrGroupId(Long attrGroupId);
+
+    List<AttrGroupWithAttrsVo> getAttrGroupWithAttrsByCatelogId(Long catelogId);
 }
 

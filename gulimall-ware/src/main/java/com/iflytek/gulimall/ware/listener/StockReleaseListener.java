@@ -41,7 +41,7 @@ public class StockReleaseListener {
             e.printStackTrace();
             log.info("出现异常:{},消息重新入队列,订单号:{}",e, wareStockDelayTO.getOrderSn());
             //出现异常,重新返回队列
-            channel.basicReject(message.getMessageProperties().getDeliveryTag(), true);
+            channel.basicReject(message.getMessageProperties().getDeliveryTag(), false);
         }
     }
     @Async
@@ -56,7 +56,7 @@ public class StockReleaseListener {
             e.printStackTrace();
             log.info("出现异常,消息重新入队列,订单号:{}", orderEntityReleaseTO.getOrderSn());
             //出现异常,重新返回队列
-            channel.basicReject(message.getMessageProperties().getDeliveryTag(), true);
+            channel.basicReject(message.getMessageProperties().getDeliveryTag(), false);
         }
     }
     @Async
@@ -71,7 +71,7 @@ public class StockReleaseListener {
             e.printStackTrace();
             log.info("出现异常,消息重新入队列,订单号:{}", orderEntityPayedTO.getOrderSn());
             //出现异常,重新返回队列
-            channel.basicReject(message.getMessageProperties().getDeliveryTag(), true);
+            channel.basicReject(message.getMessageProperties().getDeliveryTag(), false);
         }
     }
 

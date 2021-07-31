@@ -8,6 +8,10 @@
         <result property="spuId" column="spu_id"/>
         <result property="decript" column="decript"/>
     </resultMap>
+    <insert id="saveEntity">
+        INSERT INTO pms_spu_info_desc  (spu_id, decript )  VALUES  ( #{spuInfoDescEntity.spuId},#{spuInfoDescEntity.decript} )
+
+    </insert>
 
 
 </mapper>

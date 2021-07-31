@@ -1,6 +1,6 @@
 package com.iflytek.gulimall.order;
 
-import com.alibaba.cloud.seata.GlobalTransactionAutoConfiguration;
+
 import com.iflytek.gulimall.order.config.DataSourceProxyAutoConfiguration;
 import lombok.extern.slf4j.Slf4j;
 import org.mybatis.spring.annotation.MapperScan;
@@ -39,7 +39,7 @@ import java.net.UnknownHostException;
 @Import({DataSourceProxyAutoConfiguration.class})
 @Slf4j
 @SpringBootApplication(exclude = {DataSourceAutoConfiguration.class},
-        scanBasePackages = {"com.iflytek.gulimall.order","com.iflytek.gulimall.common.feign"})
+        scanBasePackages = {"com.iflytek.gulimall.order","com.iflytek.gulimall.common"})
 public class GulimallOrderApplication {
 
     public static void main(String[] args) throws UnknownHostException {

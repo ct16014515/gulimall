@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Date;
 
 
 @Configuration
@@ -25,9 +26,16 @@ public class GulimallSentinelConfig {
                 response.setCharacterEncoding("UTF-8");
                 response.setContentType("application/json");
                 response.getWriter().write(JSON.toJSONString(resultBody));
+
+
             }
         });
 
+    }
+
+
+    public static void main(String[] args) {
+        System.out.println(new Date());
     }
 
 }

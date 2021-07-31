@@ -35,7 +35,7 @@ public class CategoryController {
     /**
      * 列表tree
      */
-    @PostMapping("/list/tree")
+    @GetMapping("/list/tree")
     @ApiOperation(value = "分类列表")
     public R list(@RequestParam Map<String, Object> params){
         List<CategoryEntity>list = categoryService.listWithTree();

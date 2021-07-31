@@ -16,10 +16,13 @@ package com.iflytek.gulimall.common.exception;
  * 15:会员
  */
 public enum GulimallExceptinCodeEnum {
+
+
+    SYS_ERROR(9999," 系统异常,请联系管理员"),
     UNKNOWN_EXCEPTION(10000, "系统未知异常"),
     VALIDATE_EXCEPTION(10001, "参数校验异常"),
     TOOMANG_REQUEST_EXCEPTION(10002, "服务器休息一会"),
-    PRODUCT_UP_ERROR(11000, "商品上架异常"),
+    PRODUCT_UP_ERROR(11000, "添加索引库异常"),
     PRODUCT_SEARCH_ERROR(11001, "搜索关键字不能为空"),
     FEIGN_ERROR(10002, "服务异常,请稍后重试"),
     MEMBER_USERNAME_EXIT_ERROR(15000, "用户名已经存在"),
@@ -27,7 +30,9 @@ public enum GulimallExceptinCodeEnum {
     MEMBER_ACCOUNT_NOTEXIT_ERROR(15002, "账号不存在"),
     MEMBER_PASSWORD_ERROR(15003, "用户名不存在"),
     AUTH2_ERROR(15004, "授权失败"),
-    WARE_STOCK_ERROR(14001, "库存不足");
+    WARE_STOCK_ERROR(14001, "库存不足"),
+    WARE_SETTING_ERROR(14002, "请设置商品库存");
+
     private Integer code;
     private String message;
 

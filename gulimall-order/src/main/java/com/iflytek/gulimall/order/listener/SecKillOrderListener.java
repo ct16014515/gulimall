@@ -30,14 +30,13 @@ public class SecKillOrderListener {
         long deliveryTag = message.getMessageProperties().getDeliveryTag();
         String messageId = message.getMessageProperties().getHeader("spring_returned_message_correlation").toString();
         try {
-
             log.info("收到创建秒杀订单的消息,订单号:[{}]",entityTO.getOrderSn());
             orderService.createSecKillOrder(entityTO);
             channel.basicAck(deliveryTag, false);
             mqServiceAPI.updateMessageStatus(messageId);
         } catch (Exception e) {
             e.printStackTrace();
-            channel.basicReject(deliveryTag, true);
+            channel.basicReject(deliveryTag, false);
         }
     }
 }

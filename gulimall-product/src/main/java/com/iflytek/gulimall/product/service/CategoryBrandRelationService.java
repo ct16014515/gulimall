@@ -2,6 +2,7 @@ package com.iflytek.gulimall.product.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.iflytek.gulimall.common.utils.PageUtils;
+import com.iflytek.gulimall.product.entity.BrandEntity;
 import com.iflytek.gulimall.product.entity.CategoryBrandRelationEntity;
 
 import java.util.List;
@@ -21,5 +22,7 @@ public interface CategoryBrandRelationService extends IService<CategoryBrandRela
     PageUtils queryPageByBrandId(Map<String, Object> params, Long brandId);
 
     List<CategoryBrandRelationEntity> getListByBrandId(Long brandId);
+
+    List<BrandEntity> getBrandsByCatId(Long catId);
 }
 

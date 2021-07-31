@@ -659,11 +659,11 @@
                         </div>
                     </div>
                     <div class="box-btns-two">
-<!--                        <a th:if="${#dates.createNow().getTime()<skuItemVo.secSessionSkuVO.startTime||-->
-<!--                                                   #dates.createNow().getTime()>skuItemVo.secSessionSkuVO.endTime}"-->
-<!--                           th:href="${'javascript:addToCart('+skuItemVo.getInfo().getSkuId()+')'}">-->
-<!--                            加入购物车-->
-<!--                        </a>-->
+                        <!--                        <a th:if="${#dates.createNow().getTime()<skuItemVo.secSessionSkuVO.startTime||-->
+                        <!--                                                   #dates.createNow().getTime()>skuItemVo.secSessionSkuVO.endTime}"-->
+                        <!--                           th:href="${'javascript:addToCart('+skuItemVo.getInfo().getSkuId()+')'}">-->
+                        <!--                            加入购物车-->
+                        <!--                        </a>-->
                         <a th:if="${skuItemVo.secSessionSkuVO==null||(skuItemVo.secSessionSkuVO!=null&&(#dates.createNow().getTime()<skuItemVo.secSessionSkuVO.startTime||
                                                    #dates.createNow().getTime()>skuItemVo.secSessionSkuVO.endTime))}"
                            th:href="${'javascript:addToCart('+skuItemVo.getInfo().getSkuId()+')'}">加入购物车</a>
@@ -1825,12 +1825,12 @@
         let loginUser = [[${session.loginUser}]];
         if (loginUser) {
             let number = parseInt($("#num").val());
-                if (number > limitNumber) {
-                    alert("不能超过商品的限购数量")
-                } else {
-                    if (key && randomCode)
-                        window.location.href = `http://seckill.gulimall.com/kill?key=${key}&randomCode=${randomCode}&number=${number}`
-                }
+            if (number > limitNumber) {
+                alert("不能超过商品的限购数量")
+            } else {
+                if (key && randomCode)
+                    window.location.href = `http://seckill.gulimall.com/kill?key=${key}&randomCode=${randomCode}&number=${number}`
+            }
         } else {
             login();
         }

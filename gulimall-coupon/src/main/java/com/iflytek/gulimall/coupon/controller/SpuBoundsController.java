@@ -4,12 +4,14 @@ import java.util.Arrays;
 import java.util.Map;
 
 
+import com.iflytek.gulimall.common.feign.CouponServiceAPI;
+import com.iflytek.gulimall.common.feign.vo.SkuReductionVO;
+import com.iflytek.gulimall.common.feign.vo.SpuBoundVO;
+import com.iflytek.gulimall.common.utils.ResultBody;
+import com.iflytek.gulimall.coupon.service.SkuFullReductionService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.iflytek.gulimall.coupon.entity.SpuBoundsEntity;
 import com.iflytek.gulimall.coupon.service.SpuBoundsService;
@@ -27,9 +29,14 @@ import com.iflytek.gulimall.common.utils.R;
  */
 @RestController
 @RequestMapping("coupon/spubounds")
-public class SpuBoundsController {
+public class SpuBoundsController implements CouponServiceAPI {
     @Autowired
     private SpuBoundsService spuBoundsService;
+
+
+
+    @Autowired
+    private SkuFullReductionService skuFullReductionService;
 
     /**
      * 列表
@@ -54,16 +61,16 @@ public class SpuBoundsController {
         return R.ok().put("spuBounds", spuBounds);
     }
 
-    /**
-     * 保存
-     */
-    @RequestMapping("/save")
-   // @RequiresPermissions("coupon:spubounds:save")
-    public R save(@RequestBody SpuBoundsEntity spuBounds){
-		spuBoundsService.save(spuBounds);
-
-        return R.ok();
-    }
+//    /**
+//     * 保存
+//     */
+//    @RequestMapping("/save")
+//   // @RequiresPermissions("coupon:spubounds:save")
+//    public R save(@RequestBody SpuBoundsEntity spuBounds){
+//		spuBoundsService.save(spuBounds);
+//
+//        return R.ok();
+//    }
 
     /**
      * 修改
@@ -87,4 +94,20 @@ public class SpuBoundsController {
         return R.ok();
     }
 
+
+
+
+    @Override
+    @PostMapping("/save")
+    public void saveSpuBounds(@RequestBody SpuBoundVO spuBoundVO) {
+        SpuBoundsEntity spuBounds =new SpuBoundsEntity();
+        BeanUtils.copyProperties(spuBoundVO,spuBounds);
+        spuBoundsService.save(spuBounds);
+    }
+
+    @Override
+    @PostMapping("/saveSkuFullReduction")
+    public void saveSkuReduction(@RequestBody SkuReductionVO skuReductionVO) {
+        skuFullReductionService.saveSkuReduction(skuReductionVO);
+    }
 }

@@ -25,9 +25,9 @@ public class LoginInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String requestURI = request.getRequestURI();
         AntPathMatcher antPathMatcher = new AntPathMatcher();
-        if (antPathMatcher.match("/order/**", requestURI) ||
-                antPathMatcher.match("/order/aliPayNotifyUrl/**", requestURI) ||
-                antPathMatcher.match("/order/wxPayNotifyUrl/**", requestURI)) {
+        if (antPathMatcher.match("/order/aliPayNotifyUrl/**", requestURI)
+                || antPathMatcher.match("/order/wxPayNotifyUrl/**", requestURI)
+                 || antPathMatcher.match("/order/order/list", requestURI) ) {
             return true;
         }
         Object attribute = request.getSession().getAttribute(LOGIN_USER);
